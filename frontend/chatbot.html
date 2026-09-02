@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Clinica San Michele - sito demo CUP con prenotazioni, sala d'attesa virtuale e assistente digitale.">
+  <title>Clinica San Michele | Sito demo CUP</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/chatbot.css?v=1.1.0" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="#home" aria-label="Clinica San Michele">
+    <span class="brand-mark"><i class="bi bi-plus-lg"></i></span>
+    <span><small>CLINICA</small><strong>SAN MICHELE</strong><em>LA TUA SALUTE, LA NOSTRA PRIORITÀ</em></span>
+  </a>
+  <nav class="main-nav" aria-label="Navigazione principale">
+    <a href="#home">Home</a><a href="#specialita">Specialità</a><a href="#medici">Medici</a><a href="#prenotazioni">Prenotazioni</a><a href="#sala-attesa">Sala d'attesa virtuale</a><a href="#canali-digitali">Canali digitali</a><a href="#contatti">Contatti</a>
+  </nav>
+  <div class="header-actions">
+    <div class="phone"><i class="bi bi-telephone"></i><span><strong>091 5567448</strong><small>Lun - Ven 8:00 - 20:00</small></span></div>
+    <a class="btn btn-outline" href="patient-portal.html"><i class="bi bi-person-badge"></i> Area paziente</a><button class="btn btn-primary js-open-chat" data-message="NUOVA PRENOTAZIONE"><i class="bi bi-calendar2-check"></i> Prenota una visita</button>
+  </div>
+  <button class="menu-toggle" id="menu-toggle" aria-label="Apri menu"><i class="bi bi-list"></i></button>
+</header>
+
+<main>
+<section id="home" class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">Benvenuti in Clinica San Michele</span>
+    <h1>La tua clinica di fiducia</h1>
+    <p>Ci prendiamo cura di te con attenzione, competenza e tecnologie all'avanguardia. Diagnostica accurata, visite specialistiche e percorsi personalizzati per la tua salute.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-primary js-open-chat" data-message="NUOVA PRENOTAZIONE"><i class="bi bi-calendar2-check"></i> Prenota una visita</button>
+      <a class="btn btn-outline" href="#contatti"><i class="bi bi-telephone"></i> Contattaci</a>
+    </div>
+    <div class="trust"><i class="bi bi-shield-check"></i> Struttura sanitaria demo accreditata e autorizzata</div>
+  </div>
+  <div class="hero-photo" role="img" aria-label="Reception della Clinica San Michele"></div>
+</section>
+
+<section id="specialita" class="features section-shell">
+  <article><span class="feature-icon"><i class="bi bi-heart-pulse"></i></span><div><h3>Visite specialistiche</h3><p>Oltre 30 specialità per prenderti cura di te.</p></div></article>
+  <article><span class="feature-icon"><i class="bi bi-activity"></i></span><div><h3>Diagnostica avanzata</h3><p>Tecnologie di ultima generazione per diagnosi precise e rapide.</p></div></article>
+  <article><span class="feature-icon"><i class="bi bi-people"></i></span><div><h3>Percorsi personalizzati</h3><p>Piani di prevenzione e cura su misura per ogni paziente.</p></div></article>
+  <article><span class="feature-icon"><i class="bi bi-shield-check"></i></span><div><h3>Sicurezza e qualità</h3><p>Standard elevati e protocolli per la tua sicurezza.</p></div></article>
+</section>
+
+<section id="sala-attesa" class="waiting section-shell">
+  <div class="waiting-intro">
+    <span class="eyebrow">NOVITÀ</span>
+    <h2>Sala d'attesa virtuale</h2>
+    <p>Arrivi in clinica, inquadri il QR esposto in sala e registri la tua presenza. Da quel momento puoi restare aggiornato sul tuo turno senza passare dalla reception.</p>
+    <button class="btn btn-primary" id="show-checkin"><i class="bi bi-qr-code-scan"></i> Simula il check-in</button>
+  </div>
+  <div class="waiting-flow">
+    <article><b>1</b><i class="bi bi-building"></i><h3>Entra al centro</h3><p>Raggiungi la sala d'attesa dedicata.</p></article>
+    <span class="flow-arrow"><i class="bi bi-arrow-right"></i></span>
+    <article><b>2</b><i class="bi bi-qr-code-scan"></i><h3>Scansiona il QR</h3><p>Usa la fotocamera del telefono.</p></article>
+    <span class="flow-arrow"><i class="bi bi-arrow-right"></i></span>
+    <article><b>3</b><i class="bi bi-check2-circle"></i><h3>Segnala la presenza</h3><p>Conferma e resta aggiornato sul turno.</p></article>
+  </div>
+  <aside class="channel-qr">
+    <h3>Accesso rapido</h3><p>Telegram e WhatsApp Business</p>
+    <div class="qr-row">
+      <a href="https://t.me/demo_cup_ai" target="_blank" rel="noopener"><img src="assets/qr-telegram.png" alt="QR Telegram"><span><i class="bi bi-telegram"></i> Telegram</span></a>
+      <a href="https://wa.me/390000000000?text=Ciao%20Clinica%20San%20Michele" target="_blank" rel="noopener"><img src="assets/qr-whatsapp.png" alt="QR WhatsApp Business"><span><i class="bi bi-whatsapp"></i> WhatsApp</span></a>
+    </div>
+  </aside>
+</section>
+
+<section id="medici" class="content-grid section-shell">
+  <div class="doctors-block">
+    <div class="section-heading"><div><span class="eyebrow">SPECIALISTI</span><h2>I nostri medici</h2></div><a href="#prenotazioni">Prenota una visita <i class="bi bi-arrow-right"></i></a></div>
+    <div class="doctor-grid">
+      <article class="doctor-card"><div class="doctor-avatar">MB</div><h3>Dott. Marco Bianchi</h3><p>Cardiologia</p></article>
+      <article class="doctor-card"><div class="doctor-avatar">LR</div><h3>Dott.ssa Laura Rossi</h3><p>Ginecologia</p></article>
+      <article class="doctor-card"><div class="doctor-avatar">AC</div><h3>Dott. Andrea Conti</h3><p>Ortopedia</p></article>
+      <article class="doctor-card"><div class="doctor-avatar">CE</div><h3>Dott.ssa Chiara Esposito</h3><p>Dermatologia</p></article>
+    </div>
+  </div>
+  <article class="why-card"><h2>Perché scegliere noi</h2><ul><li>Equipe medica di alto profilo</li><li>Attenzione personalizzata</li><li>Tempi di attesa ridotti</li><li>Struttura moderna e accogliente</li><li>Promemoria automatici</li></ul></article>
+  <article id="prenotazioni" class="appointment-card"><span class="big-icon"><i class="bi bi-calendar2-check"></i></span><h2>Appuntamenti e promemoria</h2><p>Gestisci i tuoi appuntamenti in modo semplice e veloce.</p><ul><li>Prenota dalla funzione dedicata con disponibilità e prezzi</li><li>Ricevi promemoria via SMS o email</li><li>Carica ricetta o richiesta medica</li><li>Ritira referti e controlla il numero di coda</li></ul><a class="link-button" href="patient-portal.html">Apri Area Paziente <i class="bi bi-arrow-right"></i></a></article>
+</section>
+</main>
+
+<section id="canali-digitali" style="padding:70px 20px;background:#f4f8fb;text-align:center"><img src="/images/clinica-canali-digitali.jpg" alt="Canali digitali Clinica San Michele" style="display:block;width:100%;max-width:1500px;height:auto;margin:0 auto;border-radius:24px;box-shadow:0 18px 50px rgba(0,40,80,.15)"></section>
+<footer id="contatti" class="site-footer">
+  <div><div class="footer-brand">✚ <strong>CLINICA SAN MICHELE</strong></div><p>La tua salute, la nostra priorità.<br>Ogni giorno, al tuo fianco.</p></div>
+<div><h3>Contatti</h3><p><i class="bi bi-telephone"></i> 091 5567448<br><i class="bi bi-envelope"></i> info@clinicasanmichele.demo<br><i class="bi bi-globe"></i> demo-cup.ai.basidiai.it</p></div>
+  <div><h3>Dove siamo</h3><p><i class="bi bi-geo-alt"></i> Via Salute, 45<br>20100 Milano (MI)<br><i class="bi bi-car-front"></i> Parcheggio gratuito</p></div>
+  <div><h3>Orari</h3><p>Lunedì - Venerdì<br>8:00 - 20:00<br>Sabato 8:00 - 13:00</p></div>
+  <div><h3>Seguici</h3><div class="socials"><i class="bi bi-facebook"></i><i class="bi bi-instagram"></i><i class="bi bi-linkedin"></i><i class="bi bi-youtube"></i></div></div>
+  <small>Demo CUP · Clinica San Michele · Nessun dato reale.</small>
+</footer>
+
+<!-- Check-in demo -->
+<div class="modal-backdrop" id="checkin-modal" hidden>
+  <div class="checkin-modal" role="dialog" aria-modal="true" aria-labelledby="checkin-title">
+    <button class="modal-close" id="close-checkin" aria-label="Chiudi"><i class="bi bi-x-lg"></i></button>
+    <div class="checkin-grid">
+      <div><span class="eyebrow">CHECK-IN</span><h2 id="checkin-title">Segnala la tua presenza in sala</h2><p>Inquadra questo QR con lo smartphone oppure premi il pulsante per simulare la scansione.</p><img class="checkin-qr" src="assets/qr-waiting-room.png" alt="QR check-in sala d'attesa"><button class="btn btn-primary" id="confirm-presence"><i class="bi bi-check2-circle"></i> Registra presenza demo</button></div>
+      <div class="presence-status" id="presence-status"><span class="status-icon"><i class="bi bi-hourglass-split"></i></span><h3>In attesa del check-in</h3><p>La presenza non è ancora registrata.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating chatbot -->
+<button class="chat-launcher" id="chat-launcher" aria-label="Apri assistente virtuale"><i class="bi bi-chat-dots-fill"></i><span>Assistente</span></button>
+<section class="chat-widget open" id="chat-widget" aria-label="Assistente virtuale CUP">
+  <header class="chat-header">
+    <div class="assistant-title">
+      <span
+        class="bot-avatar ai"
+        id="chat-avatar"
+        aria-hidden="true">
+        <i class="bi bi-stars"></i>
+      </span>
+      <div>
+        <strong id="chat-title">Omnia</strong>
+        <small>
+          <span class="online-dot"></span>
+          <span id="chat-role">Assistente virtuale AI</span>
+          ·
+          <span id="chat-status">Connessione...</span>
+        </small>
+      </div>
+    </div>
+    
+<button
+  type="button"
+  id="chat-new-session"
+  title="Nuova chat"
+  style="
+    border:0;
+    background:transparent;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    margin-right:10px;
+  ">
+  ↻
+</button>
+<button id="chat-toggle" aria-label="Riduci chat"><i class="bi bi-dash-lg"></i></button>
+  </header>
+  <div class="chat-body" id="chat-main">
+    <div id="messages" class="messages" aria-live="polite"></div>
+  </div>
+  <div class="chat-actions" id="quick-actions" aria-label="Risposte rapide"></div>
+  <footer class="chat-footer">
+    <form id="chat-form" class="chat-form">
+      <input id="attachment-input" type="file" hidden multiple accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.txt,application/pdf,image/png,image/jpeg,text/plain">
+      <button id="attachment-button" type="button" class="icon-button" title="Allega documento" aria-label="Allega documento"><i class="bi bi-paperclip"></i></button>
+      <input id="chat-input" maxlength="2000" autocomplete="off" placeholder="Scrivi un messaggio..." aria-label="Messaggio">
+      <button id="send-button" type="submit" class="send-button" aria-label="Invia"><i class="bi bi-send"></i></button>
+    </form>
+    <div id="upload-status" class="upload-status" aria-live="polite"></div>
+  </footer>
+</section>
+
+<script src="config.js?v=1.1.0"></script>
+<script src="js/chatbot.js?v=1.3.0"></script>
+</body>
+</html>

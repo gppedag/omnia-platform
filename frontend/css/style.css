@@ -1,0 +1,2275 @@
+body { background-color: #f4f6f9; }
+
+.sidebar { min-height: calc(100vh - 56px); border-right: 1px solid #e0e0e0; }
+.sidebar .nav-link { color: #333; }
+.sidebar .nav-link.active { color: #0d6efd; font-weight: 600; }
+
+.card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(145deg, #edf4ff, #f8fafc);
+}
+.login-card { width: min(420px, 100%); }
+
+.chat-operator-layout { min-height: 560px; }
+.chat-session-list { max-height: 600px; overflow-y: auto; }
+.chat-session-item { cursor: pointer; }
+.chat-session-item.active { background: #e7f1ff; color: #0a58ca; }
+.chat-operator-messages {
+  min-height: 430px;
+  max-height: 540px;
+  overflow-y: auto;
+  padding: 18px;
+  background: #f8f9fa;
+}
+.operator-message {
+  max-width: 80%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+.operator-message.user { background: #fff; border: 1px solid #dee2e6; }
+.operator-message.assistant { background: #e7f1ff; }
+.operator-message.operator { background: #d1e7dd; margin-left: auto; }
+.operator-message .meta { display:block; font-size:.72rem; color:#6c757d; margin-top:4px; }
+
+
+
+/* Journey omnicanale operatore v1.0.10 */
+.journey-panel { border-bottom: 1px solid #dee2e6; background: #fff; padding: 14px 18px 16px; }
+.journey-header { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
+.journey-header > div { display: flex; flex-direction: column; min-width: 130px; }
+.journey-label { color: #6c757d; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }
+.journey-track { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding: 3px 3px 10px; }
+.journey-node { position: relative; display: grid; grid-template-columns: 38px minmax(130px, 180px); flex: 0 0 auto; min-width: 185px; }
+.journey-dot { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #e9ecef; color: #343a40; border: 2px solid #fff; box-shadow: 0 0 0 1px #ced4da; z-index: 2; }
+.journey-line { position: absolute; top: 16px; left: 34px; right: -2px; height: 2px; background: #ced4da; z-index: 1; }
+.journey-node-body { padding: 0 10px 0 5px; display: flex; flex-direction: column; line-height: 1.25; }
+.journey-node-body strong { font-size: .84rem; }
+.journey-node-body span { font-size: .76rem; color: #495057; margin-top: 2px; max-width: 165px; overflow-wrap: anywhere; }
+.journey-node-body small { font-size: .68rem; color: #868e96; margin-top: 3px; }
+.journey-phone .journey-dot, .journey-call .journey-dot { background: #d1e7dd; color: #0f5132; }
+.journey-sms .journey-dot { background: #cff4fc; color: #055160; }
+.journey-web .journey-dot { background: #e7f1ff; color: #0a58ca; }
+.journey-whatsapp .journey-dot { background: #d1e7dd; color: #146c43; }
+.journey-telegram .journey-dot { background: #cfe2ff; color: #084298; }
+.journey-chatwoot .journey-dot { background: #fff3cd; color: #664d03; }
+.journey-attachment .journey-dot { background: #f8d7da; color: #842029; }
+.journey-handoff .journey-dot { background: #e2e3e5; color: #41464b; }
+@media (max-width: 768px) {
+  .journey-header { gap: 12px; }
+  .journey-node { min-width: 165px; grid-template-columns: 36px minmax(115px, 155px); }
+}
+
+/* Dashboard Journey + Settings v1.0.12 */
+.dashboard-journeys { background: #fff; }
+.dashboard-journey-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 16px; border-top: 1px solid #edf0f3; }
+.dashboard-journey-row:first-child { border-top: 0; }
+.dashboard-journey-main { min-width: 0; flex: 1 1 auto; }
+.dashboard-journey-track { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.dashboard-journey-step { display: inline-flex; gap: 5px; align-items: center; font-size: .78rem; color: #344054; }
+.dashboard-journey-icon { display: inline-grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; background: #eef4ff; color: #0d6efd; }
+.dashboard-journey-arrow { color: #98a2b3; margin: 0 2px; }
+.dashboard-journey-actions { display: flex; flex-wrap: wrap; gap: 6px; flex: 0 0 auto; }
+.settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.settings-card { overflow: hidden; }
+.settings-card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #fff; }
+.settings-card-header > div:first-child { display: grid; grid-template-columns: 24px 1fr; column-gap: 6px; align-items: center; }
+.settings-card-header .small { grid-column: 2; }
+.settings-card-header > div > i { grid-row: 1 / span 2; font-size: 1.2rem; color: #0d6efd; }
+.settings-test-result { min-height: 20px; padding-top: 4px; }
+@media (max-width: 992px) {
+  .settings-grid { grid-template-columns: 1fr; }
+  .dashboard-journey-row { align-items: flex-start; flex-direction: column; }
+}
+
+
+/* Chatwoot + settings visibility v1.0.12 */
+.chatwoot-status-grid dd { overflow-wrap: anywhere; }
+.settings-highlight { outline: 3px solid rgba(13,110,253,.25); transition: outline .25s ease; }
+
+/* Agende e prenotazioni v1.0.13 */
+.cup-calendar{background:#fff;border:1px solid #dee2e6;border-radius:.5rem;overflow:auto;min-height:420px}
+.cup-week-grid{display:grid;grid-template-columns:repeat(7,minmax(150px,1fr));min-width:1050px}
+.cup-day-column{border-right:1px solid #e9ecef;min-height:430px;background:#fff;display:flex;flex-direction:column}
+.cup-day-column:last-child{border-right:0}.cup-day-column.is-today{background:#f7fbff}
+.cup-day-header{position:sticky;top:0;z-index:2;background:inherit;border-bottom:1px solid #dee2e6;padding:.65rem .75rem;display:flex;justify-content:space-between;align-items:center}.cup-day-header span{font-size:1.35rem;font-weight:600}
+.cup-day-events{padding:.5rem;display:flex;flex-direction:column;gap:.45rem;flex:1}.cup-empty-day{font-size:.8rem;color:#adb5bd;text-align:center;padding:2rem .25rem}
+.cup-event-card{width:100%;text-align:left;border:1px solid #dee2e6;border-left:4px solid var(--event-color);background:#fff;border-radius:.4rem;padding:.45rem .5rem;display:flex;flex-direction:column;gap:.08rem;font-size:.82rem;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.cup-event-card:hover{border-color:#adb5bd}.cup-event-time{font-size:.75rem;color:#495057}.cup-sync-badge{font-size:.68rem;color:#198754;margin-top:.15rem}.cup-add-day{margin:.25rem .5rem .5rem}
+.cup-month-head,.cup-month-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));min-width:840px}.cup-month-head>div{padding:.55rem;text-align:center;font-weight:600;background:#f8f9fa;border-bottom:1px solid #dee2e6}
+.cup-month-day{min-height:125px;padding:.35rem;border-right:1px solid #e9ecef;border-bottom:1px solid #e9ecef;cursor:pointer}.cup-month-day.outside{background:#f8f9fa;color:#adb5bd}.cup-month-day.is-today{background:#f1f8ff}.cup-month-number{font-weight:600;margin-bottom:.25rem}
+.cup-month-event{display:block;width:100%;text-align:left;background:#fff;border:0;border-left:3px solid #0d6efd;border-radius:.2rem;margin-bottom:.2rem;padding:.16rem .3rem;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agenda-rule-row{display:grid;grid-template-columns:minmax(120px,1fr) 120px 20px 120px;gap:.5rem;align-items:center;padding:.35rem 0;border-bottom:1px solid #f1f3f5}.agenda-rule-row:last-child{border-bottom:0}.visit-color-dot{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;margin-right:.4rem}
+@media(max-width:767px){.cup-week-grid{grid-template-columns:repeat(7,minmax(140px,1fr))}.agenda-rule-row{grid-template-columns:1fr 100px 12px 100px}}
+
+/* Booking mode / external PMS v1.0.14 */
+.external-booking-shell{background:#fff;border:1px solid #dee2e6;border-radius:.5rem;padding:.75rem}.external-booking-frame{width:100%;height:72vh;min-height:620px;border:0;border-radius:.35rem;background:#fff}.booking-mode-pill{font-size:.75rem}
+
+
+/* Handoff AI -> operatore v1.0.15 */
+.operator-presence-select{width:125px;background-color:rgba(255,255,255,.95)}
+.handoff-queue{background:#fff}.handoff-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 15px;border-top:1px solid #edf0f3}.handoff-row:first-child{border-top:0}.handoff-main{min-width:0;flex:1}.handoff-summary{white-space:pre-line;max-height:3.2em;overflow:hidden}.handoff-actions{display:flex;gap:6px;flex-wrap:wrap;flex:0 0 auto}.handoff-dashboard-card{border:1px solid rgba(220,53,69,.15)}
+@media(max-width:900px){.handoff-row{align-items:flex-start;flex-direction:column}.operator-presence-select{width:110px}.handoff-actions{width:100%}}
+
+/* UX refresh v1.0.17 */
+:root{--cup-bg:#f5f7fb;--cup-surface:#fff;--cup-border:#e8edf4;--cup-text:#172033;--cup-muted:#667085;--cup-primary:#3157d5;--cup-primary-2:#2447ba;--cup-radius:16px;--cup-shadow:0 8px 28px rgba(16,24,40,.07)}
+body{background:var(--cup-bg);color:var(--cup-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.navbar{min-height:68px;background:linear-gradient(100deg,#163a73,#3157d5)!important;box-shadow:0 1px 0 rgba(255,255,255,.08),0 10px 30px rgba(20,48,93,.18)}
+.navbar-brand{font-weight:700;letter-spacing:-.02em}.navbar .badge{border-radius:999px}.container-fluid>.row{min-height:calc(100vh - 68px)}
+.sidebar{background:#fff!important;border-right:1px solid var(--cup-border);padding:20px 12px!important;position:sticky;top:68px;height:calc(100vh - 68px);overflow:auto}
+.sidebar .nav-link{border-radius:11px;color:#526074;padding:.72rem .85rem;margin:.12rem 0;font-weight:500;display:flex;align-items:center;gap:.72rem;transition:.15s ease}.sidebar .nav-link i{font-size:1.05rem}.sidebar .nav-link:hover{background:#f3f6fb;color:#2546ad;transform:translateX(1px)}.sidebar .nav-link.active{background:#edf2ff;color:#2447ba;font-weight:700;box-shadow:inset 3px 0 0 #3157d5}.sidebar-footer{margin:28px 10px 8px;padding:12px;border-top:1px solid var(--cup-border);font-size:.76rem;color:#7b8798;display:flex;align-items:center;gap:8px}.status-dot{width:8px;height:8px;border-radius:50%;background:#12b76a;box-shadow:0 0 0 4px rgba(18,183,106,.1)}
+main{padding:28px 30px!important}.card{border:1px solid var(--cup-border);border-radius:var(--cup-radius);box-shadow:0 3px 12px rgba(16,24,40,.035);overflow:hidden}.card-header{background:#fff;border-bottom:1px solid var(--cup-border);padding:15px 18px}
+.btn{border-radius:10px;font-weight:600}.btn-primary{background:var(--cup-primary);border-color:var(--cup-primary)}.btn-primary:hover{background:var(--cup-primary-2);border-color:var(--cup-primary-2)}.form-control,.form-select{border-radius:10px;border-color:#dce3ec}.form-control:focus,.form-select:focus{border-color:#91a7ef;box-shadow:0 0 0 .2rem rgba(49,87,213,.12)}
+.dashboard-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:16px}.dashboard-hero h2{font-weight:760;letter-spacing:-.035em}.eyebrow,.section-kicker{font-size:.68rem;letter-spacing:.14em;font-weight:800;color:#6676a5}.dashboard-hero-actions{display:flex;gap:8px;flex-wrap:wrap}.dashboard-hero-actions .btn-light{border:1px solid var(--cup-border);background:#fff}
+.kpi-card{padding:18px;display:flex;align-items:center;gap:14px;min-height:112px}.kpi-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.25rem;flex:0 0 auto}.kpi-blue{background:#edf2ff;color:#3157d5}.kpi-amber{background:#fff6df;color:#b7791f}.kpi-rose{background:#fff0f1;color:#d14557}.kpi-green{background:#eafaf2;color:#14875d}.kpi-label{font-size:.78rem;color:var(--cup-muted);font-weight:650}.kpi-value{font-size:1.75rem;font-weight:780;line-height:1.1;letter-spacing:-.04em}.kpi-foot{font-size:.72rem;color:#98a2b3;margin-top:4px}
+.dashboard-focus-card{min-height:280px}.section-header{display:flex;justify-content:space-between;align-items:center}.section-header>div{display:flex;flex-direction:column}.btn-ghost{border:0;color:#3157d5;background:transparent}.btn-ghost:hover{background:#edf2ff;color:#2447ba}
+.today-booking-row{display:grid;grid-template-columns:74px 1fr auto;align-items:center;gap:14px;padding:13px 18px;border-top:1px solid #f0f3f7}.today-booking-row:first-child{border-top:0}.today-time{font-weight:800;font-size:1.05rem}.today-patient{font-weight:700}.today-meta{font-size:.76rem;color:#7b8798}.today-status{display:flex;align-items:center;gap:8px}.status-chip{font-size:.72rem;font-weight:700;border-radius:999px;padding:.34rem .58rem}.status-confirmed{background:#eafaf2;color:#137a55}.status-pending{background:#fff6df;color:#9a6700}.status-urgent{background:#fff0f1;color:#c9364d}
+.priority-list{padding:4px 0}.priority-item{display:grid;grid-template-columns:10px 1fr auto;align-items:center;gap:12px;padding:16px 18px;border-top:1px solid #f0f3f7}.priority-item:first-child{border-top:0}.priority-dot{width:9px;height:9px;border-radius:50%}.priority-count{min-width:34px;height:34px;border-radius:10px;background:#f4f6f9;display:grid;place-items:center;font-weight:800}
+.table{--bs-table-bg:transparent}.table thead th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:#78869a;border-bottom-color:#e7ecf2;background:#fafbfd}.table tbody td{vertical-align:middle;border-color:#eef2f6}.table-hover tbody tr:hover{background:#f8faff}.badge{font-weight:650}
+.cup-calendar{border-color:var(--cup-border);border-radius:var(--cup-radius);box-shadow:0 2px 8px rgba(16,24,40,.03)}.cup-event-card{border-radius:9px;border-color:#e9edf3;box-shadow:0 2px 6px rgba(16,24,40,.04);transition:.15s ease}.cup-event-card:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(16,24,40,.08)}.cup-day-header{padding:.8rem}.cup-month-day{min-height:140px}
+.dashboard-journey-row,.handoff-row{padding:16px 18px}.dashboard-journey-icon{background:#edf2ff;color:#3157d5}.journey-panel{background:#fbfcfe}.journey-dot{box-shadow:0 0 0 1px #d7deea,0 3px 9px rgba(16,24,40,.07)}
+.login-screen{background:radial-gradient(circle at 18% 20%,#dce8ff 0,transparent 28%),radial-gradient(circle at 82% 75%,#e6f5ff 0,transparent 30%),#f6f8fc}.login-card{border-radius:22px;box-shadow:0 24px 60px rgba(34,56,96,.14);border:1px solid rgba(255,255,255,.8)}
+@media(max-width:1100px){main{padding:22px 18px!important}.dashboard-hero{align-items:flex-start;flex-direction:column}.dashboard-hero-actions{width:100%}}
+@media(max-width:768px){.navbar{min-height:auto}.sidebar{position:relative;top:auto;height:auto}.today-booking-row{grid-template-columns:58px 1fr}.today-status{grid-column:2}.dashboard-hero-actions .btn{flex:1 1 auto}}
+/* v1.0.18 waitlist */
+#tab-waitlist .table td{vertical-align:middle}.kpi-orange{background:#fff3e6;color:#d97706}.kpi-blue{background:#eaf2ff;color:#2563eb}#chatwoot-inline-panel{border-style:dashed!important}
+
+/* Information architecture v1.0.20 */
+.nav-group-title{font-size:.68rem;font-weight:800;letter-spacing:.09em;color:#8491a3;padding:1rem .85rem .35rem;text-transform:uppercase}.operator-nav .nav-link{border-radius:10px;margin:2px 8px;padding:.62rem .72rem}.operator-nav .nav-link i{width:1.35rem;display:inline-block}.setup-principle{display:flex;align-items:center;gap:12px;border:1px solid #dbe7f5;background:#f7fbff;border-radius:14px;padding:14px 16px}.setup-principle>i{font-size:1.6rem;color:#0d6efd}.setup-group{margin-bottom:28px}.setup-group-heading{display:flex;align-items:center;gap:12px;margin-bottom:12px}.setup-step{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:#eaf2ff;color:#0d6efd;font-weight:800}.patient-flow-bg{background:#f4f7fb;min-height:100vh}.patient-action-card{border:0;border-radius:20px}.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}.settings-card{border:1px solid #e4e9f0;box-shadow:0 4px 18px rgba(27,44,72,.04)}
+
+/* Analytics v1.0.21 */
+.operational-health-card{border-color:#e4eaf3}.operational-health-grid>div+div{border-left:1px solid #edf1f6}.operational-health-item{padding:17px 20px;display:flex;flex-direction:column;gap:3px}.operational-health-item strong{font-size:1.45rem;letter-spacing:-.03em}.analytics-kpi{padding:19px 20px;min-height:116px}.analytics-kpi-label{font-size:.78rem;color:#667085;font-weight:700}.analytics-kpi strong{font-size:2rem;letter-spacing:-.045em;margin-top:4px}.analytics-trend{height:240px;display:flex;align-items:stretch;gap:4px;border-bottom:1px solid #e6ebf2;padding:10px 4px 0;overflow-x:auto}.trend-day{min-width:18px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.trend-stack{height:200px;width:100%;position:relative;display:flex;align-items:flex-end;justify-content:center}.trend-bar{position:absolute;bottom:0;border-radius:4px 4px 0 0}.trend-bar.bookings{width:78%;background:#dce5fa}.trend-bar.completed{width:52%;background:#54b98b}.trend-bar.cancelled{width:30%;background:#f0ad62}.trend-bar.noshow{width:14%;background:#df5a6b}.trend-day small{font-size:.58rem;color:#8995a6;transform:rotate(-40deg);transform-origin:center;white-space:nowrap;margin-bottom:6px}.analytics-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.73rem;color:#667085}.legend-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px}.legend-dot.bookings{background:#dce5fa}.legend-dot.completed{background:#54b98b}.legend-dot.cancelled{background:#f0ad62}.legend-dot.noshow{background:#df5a6b}.analytics-progress-row{margin-bottom:18px}.analytics-progress-row:last-child{margin-bottom:0}.analytics-progress-row .progress{height:7px;margin-top:6px;background:#eef2f7}.analytics-progress-row .progress-bar{background:#3157d5}.channel-pill{display:inline-flex;padding:.25rem .5rem;background:#f1f4f9;border-radius:999px;text-transform:capitalize;font-size:.76rem;font-weight:650}@media(max-width:767px){.operational-health-grid>div+div{border-left:0;border-top:1px solid #edf1f6}.analytics-trend{height:210px}.trend-stack{height:170px}}
+
+/* Toast notifications v1.0.24 - sostituiscono alert() nativo */
+.cup-toast-stack{position:fixed;top:16px;right:16px;z-index:2000;display:flex;flex-direction:column;gap:10px;max-width:min(360px,calc(100vw - 32px))}
+.cup-toast{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--cup-border,#e8edf4);border-left:4px solid #667085;border-radius:12px;box-shadow:0 10px 28px rgba(16,24,40,.14);padding:12px 12px 12px 14px;font-size:.86rem;color:var(--cup-text,#172033);opacity:0;transform:translateX(16px);transition:opacity .18s ease,transform .18s ease}
+.cup-toast.cup-toast-in{opacity:1;transform:translateX(0)}
+.cup-toast.cup-toast-out{opacity:0;transform:translateX(16px)}
+.cup-toast i{font-size:1.1rem;flex:0 0 auto}
+.cup-toast-msg{flex:1 1 auto;line-height:1.35;overflow-wrap:anywhere}
+.cup-toast-close{border:0;background:transparent;font-size:1.1rem;line-height:1;color:#98a2b3;padding:0 0 0 4px;cursor:pointer}
+.cup-toast-close:hover{color:#475467}
+.cup-toast-success{border-left-color:#12b76a}.cup-toast-success i{color:#12b76a}
+.cup-toast-error{border-left-color:#d14557}.cup-toast-error i{color:#d14557}
+.cup-toast-info{border-left-color:var(--cup-primary,#3157d5)}.cup-toast-info i{color:var(--cup-primary,#3157d5)}
+@media(max-width:480px){.cup-toast-stack{left:16px;right:16px;max-width:none}}
+
+/* Menu mobile a scomparsa v1.0.24 */
+.sidebar-toggle{display:none}
+@media(max-width:991px){
+  .sidebar-toggle{display:inline-flex}
+  .sidebar{position:fixed!important;top:0;left:0;height:100vh;width:280px;max-width:82vw;z-index:1045;
+    transform:translateX(-100%);transition:transform .2s ease;box-shadow:0 20px 45px rgba(16,24,40,.25);padding-top:76px!important}
+  .sidebar.is-open{transform:translateX(0)}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:1044}
+  .sidebar-backdrop.is-open{display:block}
+  main{padding:18px 14px!important}
+}
+
+/* ==========================================================
+   CUP Operator Conversation Supervisor
+   ========================================================== */
+
+.chat-control-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-top: 12px;
+  padding: 12px 16px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #f8fafc;
+
+  transition:
+    background .2s ease,
+    border-color .2s ease;
+}
+
+.chat-control-state {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.chat-control-dot {
+  width: 11px;
+  height: 11px;
+
+  flex: 0 0 11px;
+
+  border-radius: 50%;
+
+  background: #64748b;
+}
+
+.chat-control-dot.ai {
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34,197,94,.12);
+}
+
+.chat-control-dot.operator {
+  background: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+}
+
+.chat-control-strip.ai-control {
+  background: #f8fff9;
+  border-color: #bbf7d0;
+}
+
+.chat-control-strip.operator-control {
+  background: #f5f9ff;
+  border-color: #bfdbfe;
+}
+
+#chat-control-title {
+  display: block;
+  font-size: .92rem;
+}
+
+#chat-control-description {
+  color: #64748b;
+  margin-top: 1px;
+}
+
+
+/* =========================================================
+   OMNIA FLOW BRAND V1
+   ========================================================= */
+
+:root{
+  --omnia-navy-950:#041a3d;
+  --omnia-navy-900:#062457;
+  --omnia-navy-800:#093875;
+  --omnia-blue:#1772e8;
+  --omnia-cyan:#10aeca;
+  --omnia-teal:#18c993;
+  --omnia-header-text:#f7fbff;
+}
+
+/* Header principale */
+#operator-app > nav.navbar{
+  min-height:72px;
+  padding-top:10px !important;
+  padding-bottom:10px !important;
+
+  background:
+    linear-gradient(
+      105deg,
+      var(--omnia-navy-950) 0%,
+      var(--omnia-navy-900) 42%,
+      #0a3f86 72%,
+      #1159b6 100%
+    ) !important;
+
+  box-shadow:
+    0 4px 18px rgba(4,26,61,.18);
+
+  border-bottom:
+    1px solid rgba(255,255,255,.08);
+}
+
+/* Brand */
+.omnia-navbar-brand{
+  display:inline-flex !important;
+  align-items:center;
+  gap:9px;
+  min-width:235px;
+  margin-right:18px !important;
+}
+
+.omnia-navbar-logo{
+  width:38px;
+  height:38px;
+  object-fit:contain;
+  display:block;
+}
+
+.omnia-navbar-wordmark{
+  display:inline-flex;
+  align-items:baseline;
+  gap:4px;
+  font-size:23px;
+  line-height:1;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+}
+
+.omnia-word-omnia{
+  color:#fff;
+  font-weight:700;
+}
+
+.omnia-word-flow{
+  font-weight:650;
+
+  background:
+    linear-gradient(
+      90deg,
+      #42a0ff 0%,
+      #16b7c7 52%,
+      #20d59a 100%
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.omnia-version-badge{
+  background:
+    rgba(255,255,255,.10) !important;
+
+  color:
+    rgba(255,255,255,.90) !important;
+
+  border:
+    1px solid rgba(255,255,255,.22);
+
+  font-size:11px;
+  font-weight:600;
+  border-radius:999px;
+  padding:5px 8px;
+}
+
+/* Area destra navbar */
+#operator-app > nav.navbar .d-flex{
+  min-width:0;
+}
+
+/* Pulsanti navbar */
+#operator-app > nav.navbar .btn-outline-light{
+  border-color:
+    rgba(255,255,255,.42);
+
+  color:#fff;
+
+  background:
+    rgba(255,255,255,.04);
+}
+
+#operator-app > nav.navbar .btn-outline-light:hover{
+  background:
+    rgba(255,255,255,.12);
+
+  border-color:
+    rgba(255,255,255,.70);
+}
+
+/* Select presenza */
+.operator-presence-select{
+  min-width:145px;
+  border-radius:9px;
+
+  border:
+    1px solid rgba(255,255,255,.30);
+
+  background-color:
+    rgba(255,255,255,.96);
+
+  color:#172033;
+}
+
+/* Link principali navbar */
+#operator-app > nav.navbar > a,
+#operator-app > nav.navbar .nav-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+
+  color:
+    rgba(255,255,255,.86) !important;
+
+  text-decoration:none;
+
+  padding:7px 10px;
+  border-radius:8px;
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+#operator-app > nav.navbar > a:hover,
+#operator-app > nav.navbar .nav-link:hover{
+  color:#fff !important;
+
+  background:
+    rgba(255,255,255,.08);
+}
+
+/* Voice AI */
+#operator-app > nav.navbar a[href*="voice-conversations"]{
+  color:#29d5dd !important;
+}
+
+#operator-app > nav.navbar a[href*="voice-conversations"]:hover{
+  color:#7df4f3 !important;
+
+  background:
+    rgba(41,213,221,.10);
+}
+
+/* Icona notifica */
+#operator-app > nav.navbar .bi-bell{
+  color:
+    rgba(255,255,255,.92) !important;
+}
+
+/* Current user */
+#current-user{
+  font-size:14px;
+  font-weight:500;
+  color:
+    rgba(255,255,255,.92) !important;
+}
+
+/* Sidebar toggle coerente col nuovo header */
+#btn-sidebar-toggle{
+  border-color:
+    rgba(255,255,255,.26);
+
+  background:
+    rgba(255,255,255,.04);
+}
+
+/* Responsive */
+@media(max-width:1200px){
+
+  .omnia-navbar-brand{
+    min-width:auto;
+  }
+
+  .omnia-navbar-wordmark{
+    font-size:20px;
+  }
+
+  .omnia-navbar-logo{
+    width:34px;
+    height:34px;
+  }
+
+}
+
+@media(max-width:900px){
+
+  .omnia-navbar-wordmark{
+    display:none;
+  }
+
+  .omnia-version-badge{
+    display:none;
+  }
+
+  .omnia-navbar-brand{
+    min-width:auto;
+  }
+
+}
+
+/* OMNIA LIVE SESSION V1 */
+
+.omnia-live-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.omnia-live-badge.live{
+  color:#16803c;
+}
+
+.omnia-live-badge.closed{
+  color:#758195;
+}
+
+
+/* CUP_CALENDAR_BLOCKED_EVENTS_STYLE_V1 */
+
+.cup-calendar-blocked-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 6px 5px;
+  padding: 8px;
+  border: 1px solid rgba(120, 53, 15, .25);
+  border-radius: 8px;
+  background: rgba(245, 158, 11, .13);
+  color: #78350f;
+  overflow: hidden;
+}
+
+.cup-calendar-blocked-icon {
+  flex: 0 0 auto;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.cup-calendar-blocked-content {
+  min-width: 0;
+}
+
+.cup-calendar-blocked-time {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: .8;
+}
+
+.cup-calendar-blocked-title {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* /CUP_CALENDAR_BLOCKED_EVENTS_STYLE_V1 */
+
+/* ============================================================
+   OMNIA_PHONE_SINGLE_UI_V1
+   La sola UI telefonica visibile è Phone Island V3.
+   ============================================================ */
+
+#cup-call-island {
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* /OMNIA_PHONE_SINGLE_UI_V1 */
+
+
+/* ============================================================
+   OMNIA_PHONE_ISLAND_POLISH_V1
+   ============================================================ */
+
+.cup-phone-island-v3{
+  width:340px;
+  overflow:hidden;
+  border:1px solid rgba(15,23,42,.08);
+  border-radius:22px;
+  background:rgba(255,255,255,.97);
+  box-shadow:
+    0 22px 55px rgba(15,23,42,.16),
+    0 4px 14px rgba(15,23,42,.08);
+  backdrop-filter:blur(18px);
+}
+
+.cup-phone-island-bar{
+  min-height:64px;
+  padding:12px 14px;
+}
+
+.cup-phone-island-status-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#94a3b8;
+  box-shadow:0 0 0 4px rgba(148,163,184,.10);
+}
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-status-dot{
+  background:#f59e0b;
+  box-shadow:0 0 0 5px rgba(245,158,11,.13);
+  animation:omniaIncomingPulse 1.25s infinite;
+}
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-status-dot{
+  background:#16a34a;
+  box-shadow:0 0 0 5px rgba(22,163,74,.12);
+}
+
+@keyframes omniaIncomingPulse{
+  0%,100%{
+    transform:scale(1);
+    opacity:1;
+  }
+
+  50%{
+    transform:scale(1.28);
+    opacity:.55;
+  }
+}
+
+.cup-phone-island-title{
+  font-size:14px;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.cup-phone-island-subtitle{
+  margin-top:1px;
+  font-size:12px;
+  color:#64748b;
+}
+
+.cup-phone-island-content{
+  padding:4px 14px 14px;
+}
+
+.cup-phone-island-number{
+  height:46px;
+  width:100%;
+  padding:0 14px;
+  border:1px solid #dbe3ec;
+  border-radius:13px;
+  background:#f8fafc;
+  outline:none;
+  transition:.18s ease;
+}
+
+.cup-phone-island-number:focus{
+  background:#fff;
+  border-color:#94a3b8;
+  box-shadow:0 0 0 3px rgba(59,130,246,.08);
+}
+
+.cup-phone-island-primary{
+  min-height:44px;
+  width:100%;
+  margin-top:9px;
+  border:0;
+  border-radius:13px;
+  background:#16a34a;
+  color:#fff;
+  font-weight:700;
+  box-shadow:0 7px 18px rgba(22,163,74,.18);
+}
+
+.cup-phone-island-tools{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  margin-top:10px;
+}
+
+.cup-phone-island-tool{
+  min-width:0;
+  min-height:54px;
+  padding:7px 3px;
+  border:1px solid #e2e8f0;
+  border-radius:11px;
+  background:#fff;
+  color:#475569;
+  font-size:10px;
+}
+
+.cup-phone-island-tool i{
+  display:block;
+  margin-bottom:3px;
+  font-size:15px;
+}
+
+
+/* ---------- CHIAMATA ENTRANTE ---------- */
+
+.cup-phone-island-incoming-actions{
+  display:none !important;
+}
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-incoming-actions{
+  display:block !important;
+  margin:2px 0 12px;
+  padding:16px;
+  border:0;
+  border-radius:17px;
+  background:
+    linear-gradient(
+      145deg,
+      #0f172a,
+      #1e293b
+    );
+  color:#fff;
+  box-shadow:
+    0 12px 28px rgba(15,23,42,.20);
+}
+
+.cup-phone-island-incoming-label{
+  margin-bottom:6px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.12em;
+  color:#cbd5e1;
+}
+
+.cup-phone-island-incoming-number{
+  margin-bottom:15px;
+  font-size:20px;
+  line-height:1.2;
+  font-weight:750;
+  letter-spacing:-.02em;
+  color:#fff;
+}
+
+.cup-phone-island-incoming-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.cup-phone-island-answer,
+.cup-phone-island-reject{
+  min-height:43px;
+  border:0;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:750;
+  transition:
+    transform .15s ease,
+    opacity .15s ease;
+}
+
+.cup-phone-island-answer:hover,
+.cup-phone-island-reject:hover{
+  transform:translateY(-1px);
+}
+
+.cup-phone-island-answer{
+  background:#22c55e;
+  color:#fff;
+}
+
+.cup-phone-island-reject{
+  background:rgba(255,255,255,.11);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+
+/*
+ * Durante lo squillo:
+ * niente dialer e niente strumenti call-active.
+ */
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-number,
+
+.cup-phone-island-v3.island-incoming
+[data-island-action="call"],
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-tools,
+
+.cup-phone-island-v3.island-incoming
+[data-island-action="hangup"]{
+  display:none !important;
+}
+
+
+/* ---------- CHIAMATA ATTIVA ---------- */
+
+.cup-phone-island-end-button{
+  display:none !important;
+}
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-end-button{
+  display:block !important;
+  min-height:44px;
+  width:100%;
+  margin:10px 0 0;
+  border:0;
+  border-radius:13px;
+  background:#ef4444 !important;
+  color:#fff !important;
+  font-weight:750;
+}
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-number,
+
+.cup-phone-island-v3.island-active
+[data-island-action="call"]{
+  display:none !important;
+}
+
+
+/* ---------- SCHEDA PAZIENTE ---------- */
+
+.cup-phone-island-patient{
+  margin-top:11px;
+  padding:11px 12px;
+  border:1px solid #e2e8f0;
+  border-radius:13px;
+  background:#f8fafc;
+  align-items:center;
+  gap:10px;
+}
+
+.cup-phone-island-patient-name{
+  font-size:13px;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.cup-phone-island-patient .text-muted{
+  margin-top:1px;
+  font-size:11px;
+}
+
+.cup-phone-island-patient
+[data-island-action="patient"]{
+  margin-left:auto;
+  padding:6px 10px;
+  border:1px solid #dbe3ec;
+  border-radius:9px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  font-weight:650;
+}
+
+
+/*
+ * Scheda visibile soltanto quando è effettivamente
+ * associata ad una chiamata/paziente.
+ */
+.cup-phone-island-patient:not(.has-patient){
+  display:none !important;
+}
+
+/* /OMNIA_PHONE_ISLAND_POLISH_V1 */
+
+
+
+/* ============================================================
+   OMNIA_PHONE_COMPACT_SAFE_V2
+   Override SOLO CSS - nessuna modifica JavaScript
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   UNA SOLA UI TELEFONICA
+   ------------------------------------------------------------ */
+
+#cup-call-island{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+
+/* ------------------------------------------------------------
+   PHONE ISLAND
+   ------------------------------------------------------------ */
+
+.cup-phone-island-v3{
+  width:300px !important;
+  max-width:calc(100vw - 20px) !important;
+
+  border:1px solid #e4e9f0 !important;
+  border-radius:15px !important;
+
+  background:#ffffff !important;
+
+  box-shadow:
+    0 12px 32px rgba(15,23,42,.12),
+    0 2px 6px rgba(15,23,42,.05) !important;
+
+  overflow:hidden !important;
+}
+
+
+/* ------------------------------------------------------------
+   HEADER
+   ------------------------------------------------------------ */
+
+.cup-phone-island-bar{
+  min-height:50px !important;
+  padding:8px 10px !important;
+  gap:8px !important;
+}
+
+
+.cup-phone-island-status-dot{
+  width:8px !important;
+  height:8px !important;
+  min-width:8px !important;
+
+  box-shadow:none !important;
+}
+
+
+.cup-phone-island-title{
+  font-size:12.5px !important;
+  line-height:16px !important;
+  font-weight:700 !important;
+}
+
+
+.cup-phone-island-subtitle{
+  margin-top:0 !important;
+
+  font-size:10.5px !important;
+  line-height:14px !important;
+
+  color:#758195 !important;
+}
+
+
+.cup-phone-island-time{
+  font-size:10.5px !important;
+  font-weight:600 !important;
+}
+
+
+.cup-phone-island-icon-button{
+  width:32px !important;
+  height:32px !important;
+
+  padding:0 !important;
+
+  border-radius:9px !important;
+
+  background:#f7f9fc !important;
+  border:1px solid #e7ebf0 !important;
+}
+
+
+/* ------------------------------------------------------------
+   CONTENUTO
+   ------------------------------------------------------------ */
+
+.cup-phone-island-content{
+  padding:3px 10px 10px !important;
+}
+
+
+/* ------------------------------------------------------------
+   DIALER IDLE
+   ------------------------------------------------------------ */
+
+.cup-phone-island-number{
+  width:100% !important;
+  height:38px !important;
+
+  padding:0 10px !important;
+
+  border:1px solid #dfe5ec !important;
+  border-radius:9px !important;
+
+  background:#f8fafc !important;
+
+  font-size:12px !important;
+
+  box-shadow:none !important;
+}
+
+
+.cup-phone-island-number:focus{
+  background:#fff !important;
+
+  border-color:#93b4f5 !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(37,99,235,.06) !important;
+}
+
+
+.cup-phone-island-primary{
+  width:100% !important;
+  min-height:37px !important;
+
+  margin-top:6px !important;
+
+  padding:6px 10px !important;
+
+  border:0 !important;
+  border-radius:9px !important;
+
+  background:#16a34a !important;
+  color:#fff !important;
+
+  font-size:11.5px !important;
+  font-weight:700 !important;
+
+  box-shadow:none !important;
+}
+
+
+/* ------------------------------------------------------------
+   RISPOSTA / RIFIUTO
+
+   REGOLA FONDAMENTALE:
+   fuori da island-incoming non devono MAI apparire.
+   ------------------------------------------------------------ */
+
+.cup-phone-island-incoming-actions{
+  display:none !important;
+}
+
+
+.cup-phone-island-v3:not(.island-incoming)
+.cup-phone-island-incoming-actions{
+  display:none !important;
+}
+
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-incoming-actions{
+
+  display:block !important;
+
+  margin:1px 0 7px !important;
+  padding:9px !important;
+
+  border:1px solid #dcece2 !important;
+  border-radius:11px !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8fcf9 0%,
+      #f4faf6 100%
+    ) !important;
+
+  box-shadow:none !important;
+}
+
+
+.cup-phone-island-incoming-label{
+  margin:0 0 2px !important;
+
+  color:#16a34a !important;
+
+  font-size:9px !important;
+  line-height:12px !important;
+
+  font-weight:800 !important;
+  letter-spacing:.07em !important;
+
+  text-transform:uppercase !important;
+}
+
+
+.cup-phone-island-incoming-number{
+  margin:0 0 8px !important;
+
+  color:#172033 !important;
+
+  font-size:16px !important;
+  line-height:20px !important;
+
+  font-weight:750 !important;
+}
+
+
+.cup-phone-island-incoming-buttons{
+  display:grid !important;
+
+  grid-template-columns:
+    1fr 1fr !important;
+
+  gap:6px !important;
+}
+
+
+.cup-phone-island-answer,
+.cup-phone-island-reject{
+
+  height:36px !important;
+
+  padding:0 7px !important;
+
+  border-radius:8px !important;
+
+  font-size:11px !important;
+  font-weight:700 !important;
+
+  box-shadow:none !important;
+}
+
+
+.cup-phone-island-answer{
+  border:1px solid #16a34a !important;
+
+  background:#16a34a !important;
+  color:#fff !important;
+}
+
+
+.cup-phone-island-reject{
+  border:1px solid #fecaca !important;
+
+  background:#fff !important;
+  color:#dc2626 !important;
+}
+
+
+/* ------------------------------------------------------------
+   DURANTE LO SQUILLO
+   ------------------------------------------------------------ */
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-number,
+
+.cup-phone-island-v3.island-incoming
+[data-island-action="call"],
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-tools,
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-dtmf,
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-transfer,
+
+.cup-phone-island-v3.island-incoming
+[data-island-action="hangup"]{
+  display:none !important;
+}
+
+
+/* ------------------------------------------------------------
+   SCHEDA PAZIENTE COMPATTA
+   ------------------------------------------------------------ */
+
+.cup-phone-island-patient{
+  margin:6px 0 0 !important;
+
+  padding:7px 8px !important;
+
+  min-height:42px !important;
+
+  border:1px solid #e4e9ef !important;
+  border-radius:9px !important;
+
+  background:#f8fafc !important;
+
+  box-shadow:none !important;
+
+  gap:6px !important;
+}
+
+
+.cup-phone-island-patient-name{
+  max-width:175px;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+  white-space:nowrap;
+
+  color:#172033 !important;
+
+  font-size:11.5px !important;
+  line-height:15px !important;
+
+  font-weight:700 !important;
+}
+
+
+.cup-phone-island-patient .text-muted{
+  margin:0 !important;
+
+  font-size:9.5px !important;
+  line-height:12px !important;
+}
+
+
+.cup-phone-island-patient
+[data-island-action="patient"]{
+
+  height:28px !important;
+
+  padding:0 8px !important;
+
+  border:1px solid #dce3eb !important;
+  border-radius:7px !important;
+
+  background:#fff !important;
+  color:#2563eb !important;
+
+  font-size:9.5px !important;
+  font-weight:700 !important;
+}
+
+
+/*
+ * In idle la scheda non occupa spazio.
+ */
+
+.cup-phone-island-v3.island-idle
+.cup-phone-island-patient{
+  display:none !important;
+}
+
+
+/*
+ * Compare durante squillo e chiamata.
+ */
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-patient,
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-patient{
+  display:flex !important;
+}
+
+
+/* ------------------------------------------------------------
+   CHIAMATA ATTIVA
+   ------------------------------------------------------------ */
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-number,
+
+.cup-phone-island-v3.island-active
+[data-island-action="call"]{
+  display:none !important;
+}
+
+
+.cup-phone-island-end-button{
+  display:none !important;
+}
+
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-end-button{
+
+  display:block !important;
+
+  width:100% !important;
+  height:36px !important;
+
+  margin-top:6px !important;
+
+  border:0 !important;
+  border-radius:9px !important;
+
+  background:#ef4444 !important;
+  color:#fff !important;
+
+  font-size:11px !important;
+  font-weight:700 !important;
+
+  box-shadow:none !important;
+}
+
+
+/* ------------------------------------------------------------
+   TOOLBAR
+   ------------------------------------------------------------ */
+
+/*
+ * A riposo e durante lo squillo:
+ * non occupa spazio.
+ */
+
+.cup-phone-island-v3.island-idle
+.cup-phone-island-tools,
+
+.cup-phone-island-v3.island-incoming
+.cup-phone-island-tools{
+  display:none !important;
+}
+
+
+/*
+ * Solo durante la conversazione.
+ */
+
+.cup-phone-island-v3.island-active
+.cup-phone-island-tools{
+
+  display:grid !important;
+
+  grid-template-columns:
+    repeat(5,1fr) !important;
+
+  gap:4px !important;
+
+  margin-top:6px !important;
+}
+
+
+.cup-phone-island-tool{
+
+  min-width:0 !important;
+  min-height:41px !important;
+
+  padding:4px 1px !important;
+
+  border:1px solid #e4e9ef !important;
+  border-radius:8px !important;
+
+  background:#fff !important;
+  color:#536176 !important;
+
+  font-size:8.5px !important;
+
+  box-shadow:none !important;
+}
+
+
+.cup-phone-island-tool i{
+  display:block !important;
+
+  margin:0 0 2px !important;
+
+  font-size:12px !important;
+}
+
+
+/* ------------------------------------------------------------
+   DTMF / TRANSFER
+   ------------------------------------------------------------ */
+
+.cup-phone-island-dtmf,
+.cup-phone-island-transfer{
+  margin-top:6px !important;
+}
+
+
+/* ============================================================
+   /OMNIA_PHONE_COMPACT_SAFE_V2
+   ============================================================ */
+
+
+
+/* ============================================================
+   OMNIA_PATIENT_360_UI_V1
+   ============================================================ */
+
+#omnia-patient-360{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid #e7ebf0;
+}
+
+.omnia-p360-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.omnia-p360-eyebrow{
+  color:#64748b;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.09em;
+}
+
+.omnia-p360-summary{
+  color:#7b8798;
+  font-size:10px;
+  text-align:right;
+}
+
+.omnia-p360-tabs{
+  display:flex;
+  gap:5px;
+  padding:4px;
+  margin-bottom:10px;
+  border-radius:10px;
+  background:#f5f7fa;
+}
+
+.omnia-p360-tabs button{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-height:34px;
+  padding:5px 7px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#64748b;
+  font-size:10px;
+  font-weight:650;
+}
+
+.omnia-p360-tabs button.active{
+  background:#fff;
+  color:#2563eb;
+  box-shadow:0 1px 4px rgba(15,23,42,.08);
+}
+
+.omnia-p360-count{
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:9px;
+  background:#e9eef5;
+  color:#64748b;
+  font-size:9px;
+}
+
+.omnia-p360-tabs button.active
+.omnia-p360-count{
+  background:#eaf1ff;
+  color:#2563eb;
+}
+
+.omnia-p360-panel{
+  max-height:310px;
+  overflow:auto;
+}
+
+.omnia-p360-booking{
+  width:100%;
+  display:grid;
+  grid-template-columns:125px 1fr auto;
+  align-items:center;
+  gap:9px;
+  padding:8px 9px;
+  margin-bottom:5px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  background:#fff;
+  color:#172033;
+  text-align:left;
+}
+
+.omnia-p360-booking:hover{
+  background:#f8fafc;
+}
+
+.omnia-p360-booking-date{
+  color:#64748b;
+  font-size:9.5px;
+}
+
+.omnia-p360-booking-main{
+  min-width:0;
+}
+
+.omnia-p360-booking-main strong,
+.omnia-p360-booking-main small{
+  display:block;
+}
+
+.omnia-p360-booking-main strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:11px;
+}
+
+.omnia-p360-booking-main small{
+  margin-top:2px;
+  color:#7b8798;
+  font-size:9px;
+}
+
+.omnia-p360-chat{
+  margin-bottom:5px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.omnia-p360-chat summary{
+  list-style:none;
+  display:grid;
+  grid-template-columns:90px 1fr auto;
+  align-items:center;
+  gap:8px;
+  padding:8px 9px;
+  cursor:pointer;
+}
+
+.omnia-p360-chat summary::-webkit-details-marker{
+  display:none;
+}
+
+.omnia-p360-channel{
+  color:#2563eb;
+  font-size:10px;
+  font-weight:700;
+  text-transform:capitalize;
+}
+
+.omnia-p360-chat-preview{
+  min-width:0;
+}
+
+.omnia-p360-chat-preview strong,
+.omnia-p360-chat-preview small{
+  display:block;
+}
+
+.omnia-p360-chat-preview strong{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:10.5px;
+  font-weight:600;
+}
+
+.omnia-p360-chat-preview small{
+  margin-top:2px;
+  color:#94a3b8;
+  font-size:8.5px;
+}
+
+.omnia-p360-messages{
+  padding:7px;
+  border-top:1px solid #eef1f4;
+  background:#f8fafc;
+}
+
+.omnia-p360-message{
+  width:85%;
+  margin-bottom:5px;
+  padding:6px 8px;
+  border-radius:8px;
+  background:#fff;
+  font-size:10px;
+}
+
+.omnia-p360-message.from-patient{
+  margin-right:auto;
+}
+
+.omnia-p360-message.from-cup{
+  margin-left:auto;
+  background:#eef5ff;
+}
+
+.omnia-p360-message small{
+  display:block;
+  margin-top:3px;
+  color:#94a3b8;
+  font-size:8px;
+}
+
+.omnia-p360-section-title{
+  margin-bottom:6px;
+  color:#475569;
+  font-size:10px;
+  font-weight:750;
+}
+
+.omnia-p360-record-notes{
+  padding:9px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  background:#f8fafc;
+  font-size:10px;
+}
+
+.omnia-p360-document{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 8px;
+  margin-bottom:5px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+}
+
+.omnia-p360-document-icon{
+  font-size:17px;
+  color:#64748b;
+}
+
+.omnia-p360-document-main{
+  min-width:0;
+  flex:1;
+}
+
+.omnia-p360-document-main strong,
+.omnia-p360-document-main small{
+  display:block;
+}
+
+.omnia-p360-document-main strong{
+  font-size:10.5px;
+}
+
+.omnia-p360-document-main small{
+  color:#94a3b8;
+  font-size:8.5px;
+}
+
+.omnia-p360-empty,
+.omnia-p360-loading{
+  padding:18px 10px;
+  color:#94a3b8;
+  text-align:center;
+  font-size:10px;
+}
+
+/* /OMNIA_PATIENT_360_UI_V1 */
+
+
+
+/* ============================================================
+   OMNIA_PATIENT_360_RENDER_FIX_V2
+   ============================================================ */
+
+#patient-editor-modal #omnia-patient-360{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+
+  margin:0 !important;
+  padding:16px 24px 18px !important;
+
+  border-top:1px solid #e7ebf0 !important;
+
+  background:#fff !important;
+}
+
+#patient-editor-modal
+#omnia-patient-360
+.omnia-p360-panel{
+  display:block;
+}
+
+#patient-editor-modal
+#omnia-patient-360
+.omnia-p360-panel.d-none{
+  display:none !important;
+}
+
+/* /OMNIA_PATIENT_360_RENDER_FIX_V2 */
+
+
+
+/* ============================================================
+   OMNIA_PATIENT_CARD_MODAL_V1
+   ============================================================ */
+
+#omnia-patient-card-modal
+.modal-content{
+  border:0;
+  border-radius:16px;
+  overflow:hidden;
+}
+
+.omnia-pcard-eyebrow{
+  margin-bottom:2px;
+  color:#2563eb;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.09em;
+}
+
+.omnia-pcard-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.omnia-pcard-summary > div{
+  min-width:0;
+  padding:9px 10px;
+  border:1px solid #e6eaf0;
+  border-radius:10px;
+  background:#f8fafc;
+}
+
+.omnia-pcard-summary span,
+.omnia-pcard-summary strong{
+  display:block;
+}
+
+.omnia-pcard-summary span{
+  margin-bottom:2px;
+  color:#7b8798;
+  font-size:9px;
+}
+
+.omnia-pcard-summary strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#172033;
+  font-size:11px;
+}
+
+.omnia-pcard-tabs{
+  display:flex;
+  gap:5px;
+  margin-bottom:10px;
+  padding:4px;
+  border-radius:10px;
+  background:#f5f7fa;
+}
+
+.omnia-pcard-tabs button{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:35px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#64748b;
+  font-size:10.5px;
+  font-weight:650;
+}
+
+.omnia-pcard-tabs button.active{
+  background:#fff;
+  color:#2563eb;
+  box-shadow:0 1px 4px rgba(15,23,42,.08);
+}
+
+.omnia-pcard-tabs button span{
+  min-width:18px;
+  padding:1px 5px;
+  border-radius:9px;
+  background:#e8edf4;
+  font-size:9px;
+}
+
+.omnia-pcard-panel{
+  min-height:180px;
+  max-height:430px;
+  overflow:auto;
+}
+
+.omnia-pcard-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:5px;
+  padding:8px 9px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  background:#fff;
+}
+
+.omnia-pcard-row-icon{
+  flex:0 0 30px;
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  background:#f3f6fa;
+  color:#64748b;
+}
+
+.omnia-pcard-row-main{
+  min-width:0;
+  flex:1;
+}
+
+.omnia-pcard-row-main strong,
+.omnia-pcard-row-main span{
+  display:block;
+}
+
+.omnia-pcard-row-main strong{
+  color:#172033;
+  font-size:11px;
+}
+
+.omnia-pcard-row-main span{
+  margin-top:2px;
+  color:#7b8798;
+  font-size:9px;
+}
+
+.omnia-pcard-status{
+  flex:0 0 auto;
+  padding:3px 7px;
+  border:1px solid #e1e6ec;
+  border-radius:8px;
+  background:#f8fafc;
+  color:#64748b;
+  font-size:9px;
+}
+
+.omnia-pcard-chat{
+  margin-bottom:6px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  overflow:hidden;
+}
+
+.omnia-pcard-chat summary{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  cursor:pointer;
+  list-style:none;
+}
+
+.omnia-pcard-chat summary small{
+  display:block;
+  margin-top:2px;
+  color:#94a3b8;
+  font-size:8.5px;
+}
+
+.omnia-pcard-messages{
+  padding:8px;
+  border-top:1px solid #edf0f3;
+  background:#f8fafc;
+}
+
+.omnia-pcard-message{
+  width:82%;
+  margin-bottom:5px;
+  padding:7px 8px;
+  border-radius:9px;
+  background:#fff;
+  font-size:10px;
+}
+
+.omnia-pcard-message.operator{
+  margin-left:auto;
+  background:#edf4ff;
+}
+
+.omnia-pcard-message small{
+  display:block;
+  margin-top:3px;
+  color:#94a3b8;
+  font-size:8px;
+}
+
+.omnia-pcard-notes{
+  padding:10px;
+  border:1px solid #e7ebf0;
+  border-radius:9px;
+  background:#f8fafc;
+  font-size:10px;
+}
+
+.omnia-pcard-section-title{
+  margin-bottom:6px;
+  color:#475569;
+  font-size:10px;
+  font-weight:750;
+}
+
+.omnia-pcard-empty{
+  padding:28px 12px;
+  color:#94a3b8;
+  text-align:center;
+  font-size:10px;
+}
+
+@media(max-width:767px){
+
+  .omnia-pcard-summary{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .omnia-pcard-tabs{
+    flex-direction:column;
+  }
+}
+
+/* /OMNIA_PATIENT_CARD_MODAL_V1 */
+
+
+
+/* ============================================================
+   OMNIA_LIVE_NAV_BADGES_V1
+   ============================================================ */
+
+#app-sidebar .nav-link{
+  position:relative;
+}
+
+
+.omnia-nav-live-badge{
+
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+
+  margin-left:auto;
+
+  min-height:20px;
+
+  padding:
+    2px 7px 2px 6px;
+
+  border-radius:
+    999px;
+
+  background:
+    #eefbf4;
+
+  border:
+    1px solid #ccefdc;
+
+  color:
+    #138a4b;
+
+  font-size:
+    9px;
+
+  line-height:
+    1;
+
+  font-weight:
+    700;
+
+  vertical-align:
+    middle;
+}
+
+
+.omnia-nav-live-badge.d-none{
+  display:none !important;
+}
+
+
+.omnia-nav-live-dot{
+
+  width:6px;
+  height:6px;
+
+  flex:
+    0 0 6px;
+
+  border-radius:
+    50%;
+
+  background:
+    #16a34a;
+
+  animation:
+    omniaNavLivePulse
+    1.4s
+    ease-in-out
+    infinite;
+}
+
+
+.omnia-nav-live-label{
+
+  font-size:
+    8px;
+
+  letter-spacing:
+    .05em;
+
+  opacity:
+    .85;
+}
+
+
+.omnia-nav-live-count{
+
+  min-width:
+    10px;
+
+  font-size:
+    10px;
+
+  text-align:
+    center;
+}
+
+
+@keyframes omniaNavLivePulse{
+
+  0%,
+  100%{
+    opacity:1;
+  }
+
+  50%{
+    opacity:.3;
+  }
+}
+
+
+/*
+ * Mantiene label e badge ben allineati
+ * anche nella sidebar compatta.
+ */
+
+#chat-nav-item > .nav-link,
+#calls-nav-item > .nav-link{
+
+  display:flex;
+  align-items:center;
+
+  gap:
+    8px;
+}
+
+
+#chat-nav-item > .nav-link
+> .omnia-nav-live-badge,
+
+#calls-nav-item > .nav-link
+> .omnia-nav-live-badge{
+
+  margin-left:
+    auto;
+}
+
+
+/* /OMNIA_LIVE_NAV_BADGES_V1 */
+
+
+
+/* ============================================================
+   OMNIA_DASHBOARD_LIVE_COUNTERS_V2
+   ============================================================ */
+
+
+/* ---------- SIDEBAR ---------- */
+
+#app-sidebar
+.omnia-nav-with-live{
+  display:flex !important;
+  align-items:center;
+  gap:8px;
+}
+
+
+#app-sidebar
+.omnia-nav-label{
+  min-width:0;
+}
+
+
+#app-sidebar
+.omnia-sidebar-live-badge{
+
+  display:inline-flex;
+
+  align-items:center;
+  justify-content:center;
+
+  gap:4px;
+
+  margin-left:auto;
+
+  min-width:28px;
+  height:21px;
+
+  padding:0 7px;
+
+  border:
+    1px solid #bfe8cf;
+
+  border-radius:999px;
+
+  background:#eefbf3;
+
+  color:#15803d;
+
+  font-size:10px;
+
+  font-weight:800;
+
+  line-height:1;
+}
+
+
+#app-sidebar
+.omnia-sidebar-live-badge.d-none{
+  display:none !important;
+}
+
+
+.omnia-sidebar-live-dot{
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:#22c55e;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(34,197,94,.10);
+
+  animation:
+    omniaSidebarLivePulse
+    1.3s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes omniaSidebarLivePulse{
+
+  0%,
+  100%{
+    opacity:1;
+  }
+
+  50%{
+    opacity:.25;
+  }
+}
+
+
+/* ---------- DASHBOARD KPI ---------- */
+
+.kpi-grid{
+  align-items:stretch;
+}
+
+
+.kpi-grid
+> [class*="col-"]{
+  min-width:190px;
+}
+
+
+.kpi-card-rich{
+
+  height:100%;
+
+  min-height:132px;
+
+  align-items:flex-start !important;
+
+  padding:17px !important;
+
+  position:relative;
+
+  overflow:hidden;
+}
+
+
+.kpi-card-rich
+.kpi-main{
+  flex:1;
+  min-width:0;
+}
+
+
+.kpi-card-rich
+.kpi-value{
+
+  margin-top:2px;
+
+  line-height:1;
+
+  font-size:28px;
+
+  font-weight:750;
+}
+
+
+.kpi-card-rich
+.kpi-foot{
+
+  min-height:17px;
+
+  margin-top:4px;
+}
+
+
+.kpi-mini-row{
+
+  display:flex;
+
+  justify-content:space-between;
+  align-items:center;
+
+  gap:8px;
+
+  margin-top:10px;
+
+  padding-top:8px;
+
+  border-top:
+    1px solid
+    rgba(148,163,184,.18);
+
+  color:#7b8798;
+
+  font-size:9.5px;
+}
+
+
+.kpi-mini-row span{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:4px;
+}
+
+
+.kpi-mini-row strong{
+
+  color:#475569;
+
+  font-size:11px;
+}
+
+
+.omnia-kpi-live-dot{
+
+  display:inline-block;
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:#22c55e;
+
+  animation:
+    omniaSidebarLivePulse
+    1.3s
+    ease-in-out
+    infinite;
+}
+
+
+.kpi-violet{
+
+  color:#7c3aed !important;
+
+  background:
+    rgba(124,58,237,.09)
+    !important;
+}
+
+
+@media(max-width:1199px){
+
+  .kpi-grid
+  > [class*="col-"]{
+    min-width:0;
+  }
+
+}
+
+
+/* /OMNIA_DASHBOARD_LIVE_COUNTERS_V2 */
+

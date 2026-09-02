@@ -1,0 +1,5 @@
+# Dipendenze opzionali per l'integrazione LiveKit.
+# Il core CUP 1.0.10 non richiede questo file.
+# Installare una versione compatibile del pacchetto LiveKit Python SDK
+# quando si abilita la route /api/livekit e il profilo realtime.
+livekit-api>=1.0.0

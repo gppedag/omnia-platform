@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Impostazioni | CUP Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f4f7fb;color:#172033}
+header{height:68px;background:linear-gradient(90deg,#153d7a,#315ed4);color:white;display:flex;align-items:center;padding:0 24px;gap:18px}
+header a{color:white;text-decoration:none}
+main{max-width:1500px;margin:24px auto;padding:0 18px}
+.card{border:1px solid #e3e9f2;border-radius:16px;box-shadow:0 8px 24px rgba(20,45,80,.05)}
+.nav-pills .nav-link{border-radius:10px}
+.entity-row{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid #edf1f6}
+.entity-row:last-child{border-bottom:0}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:0 0 12px}
+.square{width:12px;height:12px;border-radius:2px;display:inline-block;flex:0 0 12px}
+.small-note{font-size:12px;color:#667085}
+.settings-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.quick-links{display:flex;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/">
+    <i class="bi bi-arrow-left"></i>
+    CUP
+  </a>
+  <strong><i class="bi bi-gear"></i> Impostazioni</strong>
+  <span class="ms-auto">Admin</span>
+</header>
+
+<main>
+
+<div id="message" class="alert d-none"></div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="quick-links">
+      <a class="btn btn-outline-primary" href="/admin-catalog.html">
+        <i class="bi bi-diagram-3"></i>
+        Medici ↔ Prestazioni
+      </a>
+      <a class="btn btn-outline-primary" href="/admin-agenda-visits.html">
+        <i class="bi bi-calendar3"></i>
+        Agende ↔ Prestazioni
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+
+    <ul class="nav nav-pills mb-4" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-agendas">
+          <i class="bi bi-calendar3"></i> Agende
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-doctors">
+          <i class="bi bi-person-badge"></i> Medici
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-visits">
+          <i class="bi bi-clipboard2-pulse"></i> Prestazioni
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+
+      <div class="tab-pane fade show active" id="tab-agendas">
+        <div class="settings-toolbar">
+          <div>
+            <h5 class="mb-0">Agende</h5>
+            <div class="small-note">Definisci agenda, medico, sede e durata slot.</div>
+          </div>
+          <button class="btn btn-primary" onclick="openAgenda()">
+            <i class="bi bi-plus-lg"></i> Nuova agenda
+          </button>
+        </div>
+        <div id="agenda-list"></div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-doctors">
+        <div class="settings-toolbar">
+          <div>
+            <h5 class="mb-0">Medici</h5>
+            <div class="small-note">Anagrafica, specializzazione e colore calendario.</div>
+          </div>
+          <button class="btn btn-primary" onclick="openDoctor()">
+            <i class="bi bi-plus-lg"></i> Nuovo medico
+          </button>
+        </div>
+        <div id="doctor-list"></div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-visits">
+        <div class="settings-toolbar">
+          <div>
+            <h5 class="mb-0">Prestazioni</h5>
+            <div class="small-note">Nome, codice, durata e colore tipologia visita.</div>
+          </div>
+          <button class="btn btn-primary" onclick="openVisit()">
+            <i class="bi bi-plus-lg"></i> Nuova prestazione
+          </button>
+        </div>
+        <div id="visit-list"></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+
+<div class="modal fade" id="agenda-modal" tabindex="-1">
+<div class="modal-dialog">
+<form class="modal-content" id="agenda-form">
+<div class="modal-header">
+  <h5 class="modal-title">Agenda</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<input type="hidden" id="agenda-id">
+<div class="mb-3">
+  <label class="form-label">Nome agenda</label>
+  <input class="form-control" id="agenda-name" required>
+</div>
+<div class="mb-3">
+  <label class="form-label">Medico</label>
+  <select class="form-select" id="agenda-doctor">
+    <option value="">Nessun medico</option>
+  </select>
+</div>
+<div class="mb-3">
+  <label class="form-label">Sede / ambulatorio</label>
+  <input class="form-control" id="agenda-location">
+</div>
+<div class="mb-3">
+  <label class="form-label">Durata slot predefinita</label>
+  <div class="input-group">
+    <input type="number" min="5" step="5" class="form-control" id="agenda-slot" value="60">
+    <span class="input-group-text">min</span>
+  </div>
+</div>
+<div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" id="agenda-active" checked>
+  <label class="form-check-label">Agenda attiva</label>
+</div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+  <button class="btn btn-primary">Salva</button>
+</div>
+</form>
+</div>
+</div>
+
+
+<div class="modal fade" id="doctor-modal" tabindex="-1">
+<div class="modal-dialog">
+<form class="modal-content" id="doctor-form">
+<div class="modal-header">
+  <h5 class="modal-title">Medico</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<input type="hidden" id="doctor-id">
+<div class="mb-3">
+  <label class="form-label">Nome e cognome</label>
+  <input class="form-control" id="doctor-name" required>
+</div>
+<div class="mb-3">
+  <label class="form-label">Specializzazione</label>
+  <input class="form-control" id="doctor-specialty">
+</div>
+<div class="mb-3">
+  <label class="form-label">Email</label>
+  <input type="email" class="form-control" id="doctor-email">
+</div>
+<div class="mb-3">
+  <label class="form-label">Colore calendario</label>
+  <input type="color" class="form-control form-control-color" id="doctor-color" value="#2563EB">
+</div>
+<div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" id="doctor-active" checked>
+  <label class="form-check-label">Medico attivo</label>
+</div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+  <button class="btn btn-primary">Salva</button>
+</div>
+</form>
+</div>
+</div>
+
+
+<div class="modal fade" id="visit-modal" tabindex="-1">
+<div class="modal-dialog">
+<form class="modal-content" id="visit-form">
+<div class="modal-header">
+  <h5 class="modal-title">Prestazione</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<input type="hidden" id="visit-id">
+<div class="mb-3">
+  <label class="form-label">Codice</label>
+  <input class="form-control" id="visit-code">
+</div>
+<div class="mb-3">
+  <label class="form-label">Nome prestazione</label>
+  <input class="form-control" id="visit-name" required>
+</div>
+<div class="mb-3">
+  <label class="form-label">Durata predefinita</label>
+  <div class="input-group">
+    <input type="number" min="5" step="5" class="form-control" id="visit-duration" value="60">
+    <span class="input-group-text">min</span>
+  </div>
+</div>
+<div class="mb-3">
+  <label class="form-label">Colore</label>
+  <input type="color" class="form-control form-control-color" id="visit-color" value="#3B82F6">
+</div>
+<div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" id="visit-active" checked>
+  <label class="form-check-label">Prestazione attiva</label>
+</div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+  <button class="btn btn-primary">Salva</button>
+</div>
+</form>
+</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+let state={doctors:[],visit_types:[],agendas:[]};
+
+const agendaModal=new bootstrap.Modal("#agenda-modal");
+const doctorModal=new bootstrap.Modal("#doctor-modal");
+const visitModal=new bootstrap.Modal("#visit-modal");
+
+async function auth(){
+  const token = localStorage.getItem("cup_token") || "";
+
+  if(!token){
+    throw new Error("Sessione non autenticata");
+  }
+
+  const r = await fetch("/api/auth/me",{
+    headers:{
+      "Authorization":`Bearer ${token}`
+    }
+  });
+
+  if(!r.ok){
+    localStorage.removeItem("cup_token");
+    throw new Error("Sessione scaduta");
+  }
+
+  const me = await r.json();
+
+  if(me.role !== "admin"){
+    throw new Error("Accesso riservato agli amministratori");
+  }
+
+  return token;
+}
+
+async function api(path,opt={}){
+  const token=await auth();
+
+  const r=await fetch(path,{
+    ...opt,
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${token}`,
+      ...(opt.headers||{})
+    }
+  });
+
+  if(!r.ok){
+    let msg=`HTTP ${r.status}`;
+    try{
+      const data=await r.json();
+      msg=data.detail||msg;
+    }catch(_){}
+    throw new Error(msg);
+  }
+
+  return r.json();
+}
+
+function esc(v){
+  return String(v??"").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function message(text,type="success"){
+  const box=document.getElementById("message");
+  box.className=`alert alert-${type}`;
+  box.textContent=text;
+  box.classList.remove("d-none");
+}
+
+async function load(){
+  state=await api("/api/admin/settings");
+  render();
+}
+
+function render(){
+  document.getElementById("agenda-list").innerHTML=
+    state.agendas.map(a=>`
+      <div class="entity-row">
+        <span class="dot" style="background:${esc(a.doctor_color||"#64748b")}"></span>
+        <div class="flex-grow-1">
+          <strong>${esc(a.name)}</strong>
+          <div class="small-note">
+            ${esc(a.doctor_name||"Nessun medico")}
+            · ${esc(a.location||"Sede non definita")}
+            · ${a.slot_minutes||60} min
+          </div>
+        </div>
+        ${a.active===false?'<span class="badge text-bg-secondary">Disattiva</span>':""}
+        <button class="btn btn-sm btn-outline-secondary" onclick="openAgenda(${a.id})">
+          <i class="bi bi-pencil"></i>
+        </button>
+      </div>
+    `).join("") || '<div class="text-muted">Nessuna agenda.</div>';
+
+  document.getElementById("doctor-list").innerHTML=
+    state.doctors.map(d=>`
+      <div class="entity-row">
+        <span class="dot" style="background:${esc(d.color_hex||"#2563EB")}"></span>
+        <div class="flex-grow-1">
+          <strong>${esc(d.full_name)}</strong>
+          <div class="small-note">${esc(d.specialty||"Specializzazione non definita")}</div>
+        </div>
+        ${d.active===false?'<span class="badge text-bg-secondary">Disattivo</span>':""}
+        <button class="btn btn-sm btn-outline-secondary" onclick="openDoctor(${d.id})">
+          <i class="bi bi-pencil"></i>
+        </button>
+      </div>
+    `).join("") || '<div class="text-muted">Nessun medico.</div>';
+
+  document.getElementById("visit-list").innerHTML=
+    state.visit_types.map(v=>`
+      <div class="entity-row">
+        <span class="square" style="background:${esc(v.color_hex||"#3B82F6")}"></span>
+        <div class="flex-grow-1">
+          <strong>${esc(v.name)}</strong>
+          <div class="small-note">
+            ${esc(v.code||"Nessun codice")} · ${v.duration_minutes||60} min
+          </div>
+        </div>
+        ${v.active===false?'<span class="badge text-bg-secondary">Disattiva</span>':""}
+        <button class="btn btn-sm btn-outline-secondary" onclick="openVisit(${v.id})">
+          <i class="bi bi-pencil"></i>
+        </button>
+      </div>
+    `).join("") || '<div class="text-muted">Nessuna prestazione.</div>';
+
+  document.getElementById("agenda-doctor").innerHTML=
+    '<option value="">Nessun medico</option>'+
+    state.doctors
+      .filter(d=>d.active!==false)
+      .map(d=>`<option value="${d.id}">${esc(d.full_name)}</option>`)
+      .join("");
+}
+
+function openAgenda(id=null){
+  const a=state.agendas.find(x=>x.id===id);
+
+  document.getElementById("agenda-id").value=a?.id||"";
+  document.getElementById("agenda-name").value=a?.name||"";
+  document.getElementById("agenda-doctor").value=a?.doctor_id||"";
+  document.getElementById("agenda-location").value=a?.location||"";
+  document.getElementById("agenda-slot").value=a?.slot_minutes||60;
+  document.getElementById("agenda-active").checked=a?.active!==false;
+
+  agendaModal.show();
+}
+
+function openDoctor(id=null){
+  const d=state.doctors.find(x=>x.id===id);
+
+  document.getElementById("doctor-id").value=d?.id||"";
+  document.getElementById("doctor-name").value=d?.full_name||"";
+  document.getElementById("doctor-specialty").value=d?.specialty||"";
+  document.getElementById("doctor-email").value=d?.email||"";
+  document.getElementById("doctor-color").value=d?.color_hex||"#2563EB";
+  document.getElementById("doctor-active").checked=d?.active!==false;
+
+  doctorModal.show();
+}
+
+function openVisit(id=null){
+  const v=state.visit_types.find(x=>x.id===id);
+
+  document.getElementById("visit-id").value=v?.id||"";
+  document.getElementById("visit-code").value=v?.code||"";
+  document.getElementById("visit-name").value=v?.name||"";
+  document.getElementById("visit-duration").value=v?.duration_minutes||60;
+  document.getElementById("visit-color").value=v?.color_hex||"#3B82F6";
+  document.getElementById("visit-active").checked=v?.active!==false;
+
+  visitModal.show();
+}
+
+document.getElementById("agenda-form").onsubmit=async e=>{
+  e.preventDefault();
+
+  const id=Number(document.getElementById("agenda-id").value)||null;
+
+  const body={
+    name:document.getElementById("agenda-name").value.trim(),
+    doctor_id:Number(document.getElementById("agenda-doctor").value)||null,
+    location:document.getElementById("agenda-location").value.trim()||null,
+    slot_minutes:Number(document.getElementById("agenda-slot").value)||60,
+    active:document.getElementById("agenda-active").checked
+  };
+
+  await api(
+    id?`/api/admin/settings/agendas/${id}`:"/api/admin/settings/agendas",
+    {method:id?"PUT":"POST",body:JSON.stringify(body)}
+  );
+
+  agendaModal.hide();
+  message("Agenda salvata.");
+  await load();
+};
+
+document.getElementById("doctor-form").onsubmit=async e=>{
+  e.preventDefault();
+
+  const id=Number(document.getElementById("doctor-id").value)||null;
+
+  const body={
+    full_name:document.getElementById("doctor-name").value.trim(),
+    specialty:document.getElementById("doctor-specialty").value.trim()||null,
+    email:document.getElementById("doctor-email").value.trim()||null,
+    color_hex:document.getElementById("doctor-color").value,
+    active:document.getElementById("doctor-active").checked
+  };
+
+  await api(
+    id?`/api/admin/settings/doctors/${id}`:"/api/admin/settings/doctors",
+    {method:id?"PUT":"POST",body:JSON.stringify(body)}
+  );
+
+  doctorModal.hide();
+  message("Medico salvato.");
+  await load();
+};
+
+document.getElementById("visit-form").onsubmit=async e=>{
+  e.preventDefault();
+
+  const id=Number(document.getElementById("visit-id").value)||null;
+
+  const body={
+    code:document.getElementById("visit-code").value.trim()||null,
+    name:document.getElementById("visit-name").value.trim(),
+    duration_minutes:Number(document.getElementById("visit-duration").value)||60,
+    color_hex:document.getElementById("visit-color").value,
+    active:document.getElementById("visit-active").checked
+  };
+
+  await api(
+    id?`/api/admin/settings/visit-types/${id}`:"/api/admin/settings/visit-types",
+    {method:id?"PUT":"POST",body:JSON.stringify(body)}
+  );
+
+  visitModal.hide();
+  message("Prestazione salvata.");
+  await load();
+};
+
+load().catch(e=>message(e.message,"danger"));
+
+</script>
+</body>
+</html>

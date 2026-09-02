@@ -1,0 +1,236 @@
+:root{--blue:#064f83;--teal:#078a91;--ink:#12324b;--muted:#64748b;--line:#dbe7ef;--soft:#f3f8fb;--green:#0f9f78;--orange:#e67e22}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(180deg,#f7fbfd 0,#eef6fa 100%);min-height:100vh}.portal-header{height:76px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 max(28px,calc((100vw - 1240px)/2));border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--blue)}.brand .mark{border:3px solid var(--teal);border-radius:14px;font-weight:800;font-size:28px;line-height:42px;width:46px;height:46px;text-align:center}.brand small,.brand strong{display:block}.brand small{font-size:12px;letter-spacing:.12em}.brand strong{font-family:Georgia,serif;font-size:22px}.patient-chip{display:flex;gap:9px;align-items:center;background:var(--soft);padding:10px 14px;border-radius:999px}.portal-shell{max-width:1240px;margin:0 auto;padding:34px 24px 60px}.welcome{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:26px}.welcome h1{font-family:Georgia,serif;font-size:38px;max-width:720px;margin:6px 0 8px;color:#073c67}.welcome p{max-width:780px;color:var(--muted);font-size:17px}.eyebrow{font-size:12px;font-weight:800;color:var(--teal);letter-spacing:.1em}.back-site{color:var(--blue);text-decoration:none;font-weight:700}.service-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}.service{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;text-align:left;cursor:pointer;color:var(--ink);box-shadow:0 8px 22px rgba(36,78,105,.05)}.service i{display:block;font-size:24px;color:var(--teal);margin-bottom:10px}.service strong,.service span{display:block}.service span{font-size:12px;color:var(--muted);margin-top:4px}.service.active{border-color:#79b9d3;box-shadow:0 0 0 2px rgba(7,138,145,.08)}.view-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 12px 28px rgba(26,69,96,.06)}.portal-view{display:none}.portal-view.active{display:block}.view-title{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.view-title h2{font-family:Georgia,serif;color:#073c67;margin:4px 0;font-size:28px}.secure{font-size:13px;color:var(--green);background:#eefaf6;padding:8px 12px;border-radius:999px}.booking-layout{display:grid;grid-template-columns:360px 1fr;gap:28px}.booking-form{background:var(--soft);padding:20px;border-radius:16px}.booking-form label,.support-form label{display:block;font-weight:700;font-size:13px;margin-bottom:14px}.booking-form input,.booking-form select,.support-form input,.support-form textarea{display:block;width:100%;margin-top:7px;border:1px solid #c9d9e3;border-radius:10px;padding:11px 12px;font:inherit;background:#fff}.regime{margin:10px 0 16px}.regime>span{font-size:13px;font-weight:800;display:block;margin-bottom:7px}.regime label{display:inline-flex;align-items:center;gap:5px;margin-right:18px;font-weight:600}.regime input{width:auto;margin:0}.service-summary{border-top:1px solid var(--line);padding:13px 0;font-size:14px;min-height:54px}.price{font-size:24px;font-weight:800;color:var(--blue)}.primary,.ghost{border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer}.primary{background:var(--blue);color:white}.ghost{background:var(--soft);color:var(--blue)}.slot-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.slot{border:1px solid var(--line);border-radius:13px;padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}.slot strong,.slot small{display:block}.slot small{color:var(--muted);margin-top:3px}.slot button{border:1px solid #7ebbd3;background:#f7fcff;color:var(--blue);border-radius:8px;padding:8px 10px;font-weight:800;cursor:pointer}.empty{grid-column:1/-1;color:var(--muted);background:var(--soft);padding:22px;border-radius:12px}.data-list{display:grid;gap:10px}.data-row{border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;grid-template-columns:1.5fr 1fr auto;gap:16px;align-items:center}.data-row strong,.data-row span,.data-row small{display:block}.data-row small{color:var(--muted);margin-top:4px}.status{display:inline-block!important;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;background:#eef3f7}.status.confirmed{background:#eaf9f3;color:#087a5c}.status.pending{background:#fff7e9;color:#a05b00}.status.cancelled{background:#fff0f0;color:#a82d2d}.download{color:var(--blue);font-weight:800;text-decoration:none}.queue-status{margin-top:18px}.ticket{background:#eafbfb;border:1px solid #bee6e6;padding:22px;border-radius:16px;text-align:center}.ticket b{display:block;font-size:40px;color:var(--teal)}.support-form{max-width:640px}.lead{color:var(--muted)}.toast{position:fixed;right:24px;bottom:24px;background:#102f46;color:white;padding:14px 18px;border-radius:12px;z-index:20;max-width:360px}@media(max-width:950px){.service-grid{grid-template-columns:repeat(2,1fr)}.booking-layout{grid-template-columns:1fr}.slot-list{grid-template-columns:1fr}.welcome{align-items:flex-start;flex-direction:column}.data-row{grid-template-columns:1fr}.portal-header{padding:0 18px}}@media(max-width:560px){.service-grid{grid-template-columns:1fr}.portal-shell{padding:22px 14px}.welcome h1{font-size:31px}.patient-chip span{display:none}}
+
+/* ===== Patient OTP Login ===== */
+
+.login-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 15% 15%,rgba(36,122,168,.12),transparent 34%),
+    linear-gradient(135deg,#f7fbfd,#edf5f8);
+}
+
+.login-card{
+  width:min(100%,520px);
+  background:#fff;
+  border-radius:28px;
+  padding:38px;
+  box-shadow:0 30px 80px rgba(24,62,82,.16);
+  border:1px solid rgba(25,93,126,.08);
+}
+
+.login-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  margin-bottom:34px;
+}
+
+.login-brand .mark{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:#177ca5;
+  color:#fff;
+  font-size:27px;
+  font-weight:300;
+}
+
+.login-brand span:last-child{
+  display:flex;
+  flex-direction:column;
+}
+
+.login-brand small{
+  color:#7d919c;
+  font-size:10px;
+  letter-spacing:2px;
+}
+
+.login-brand strong{
+  color:#163d51;
+  letter-spacing:.4px;
+}
+
+.login-icon{
+  display:flex;
+  width:58px;
+  height:58px;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  background:#eaf6fa;
+  color:#177ca5;
+  font-size:27px;
+  margin-bottom:20px;
+}
+
+.login-card h1{
+  margin:0 0 10px;
+  color:#163d51;
+  font-size:30px;
+  line-height:1.15;
+}
+
+.login-card p{
+  color:#667d89;
+  line-height:1.55;
+  margin:0 0 28px;
+}
+
+.login-label,
+.registration-grid label{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  font-weight:600;
+  color:#294c5d;
+}
+
+.phone-input{
+  display:flex;
+  align-items:center;
+  border:1px solid #cfdee5;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.phone-input:focus-within{
+  border-color:#177ca5;
+  box-shadow:0 0 0 3px rgba(23,124,165,.10);
+}
+
+.phone-input span{
+  padding:0 14px;
+  color:#536e7b;
+  border-right:1px solid #dde7eb;
+}
+
+.phone-input input{
+  flex:1;
+  border:0;
+  outline:0;
+  padding:15px;
+  font-size:18px;
+}
+
+.login-primary{
+  width:100%;
+  margin-top:20px;
+  border:0;
+  border-radius:14px;
+  padding:15px 20px;
+  background:#177ca5;
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.login-primary:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+
+.login-secondary{
+  width:100%;
+  margin-top:10px;
+  border:0;
+  background:transparent;
+  color:#177ca5;
+  padding:11px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.login-security{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin-top:24px;
+  padding:14px;
+  background:#f5fafc;
+  border-radius:12px;
+  color:#607985;
+  font-size:13px;
+}
+
+.login-security i{
+  color:#18825d;
+  font-size:18px;
+}
+
+.otp-input{
+  width:100%;
+  box-sizing:border-box;
+  padding:17px;
+  border:1px solid #cfdee5;
+  border-radius:14px;
+  outline:none;
+  text-align:center;
+  font-size:28px;
+  letter-spacing:10px;
+  font-weight:700;
+}
+
+.otp-input:focus{
+  border-color:#177ca5;
+  box-shadow:0 0 0 3px rgba(23,124,165,.10);
+}
+
+.demo-otp-box{
+  margin-top:18px;
+  padding:12px;
+  border-radius:10px;
+  background:#fff8db;
+  color:#725b00;
+  text-align:center;
+  font-size:13px;
+}
+
+.login-error{
+  margin-top:18px;
+  padding:12px 14px;
+  border-radius:10px;
+  background:#fff0f0;
+  color:#a33;
+  font-size:14px;
+}
+
+.registration-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.registration-grid input{
+  padding:13px;
+  border:1px solid #cfdee5;
+  border-radius:11px;
+  font:inherit;
+}
+
+@media(max-width:600px){
+  .login-card{
+    padding:26px 22px;
+    border-radius:22px;
+  }
+
+  .login-card h1{
+    font-size:25px;
+  }
+
+  .registration-grid{
+    grid-template-columns:1fr;
+  }
+}

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Area Paziente | Clinica San Michele</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="css/patient-portal.css?v=1.0.27" rel="stylesheet">
+</head>
+<body>
+<header class="portal-header"><a class="brand" href="chatbot.html"><span class="mark">+</span><span><small>CLINICA</small><strong>SAN MICHELE</strong></span></a><div class="patient-chip"><i class="bi bi-person-circle"></i><span id="patient-name">Area Paziente</span></div></header>
+
+<div id="login-overlay" class="login-overlay">
+  <div class="login-card">
+
+    <a class="login-brand" href="chatbot.html">
+      <span class="mark">+</span>
+      <span>
+        <small>CLINICA</small>
+        <strong>SAN MICHELE</strong>
+      </span>
+    </a>
+
+    <div id="login-phone-step">
+      <span class="login-icon">
+        <i class="bi bi-person-lock"></i>
+      </span>
+
+      <h1>Accedi alla tua Area Paziente</h1>
+
+      <p>
+        Inserisci il numero di cellulare associato alla tua anagrafica.
+        Ti invieremo un codice temporaneo.
+      </p>
+
+      <label class="login-label">
+        Numero di cellulare
+        <div class="phone-input">
+          <span>+39</span>
+          <input
+            id="login-phone"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="333 123 4567">
+        </div>
+      </label>
+
+      <button id="request-otp" class="login-primary" type="button">
+        Ricevi codice
+      </button>
+
+      <div class="login-security">
+        <i class="bi bi-shield-check"></i>
+        <span>
+          Accesso sicuro senza password.
+          Il codice ha validità limitata.
+        </span>
+      </div>
+    </div>
+
+    <div id="login-otp-step" hidden>
+      <span class="login-icon">
+        <i class="bi bi-chat-dots"></i>
+      </span>
+
+      <h1>Inserisci il codice</h1>
+
+      <p id="otp-description">
+        Abbiamo inviato un codice al tuo cellulare.
+      </p>
+
+      <input
+        id="login-otp"
+        class="otp-input"
+        type="text"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        maxlength="6"
+        placeholder="000000">
+
+      <button id="verify-otp" class="login-primary" type="button">
+        Accedi
+      </button>
+
+      <button id="change-phone" class="login-secondary" type="button">
+        Usa un altro numero
+      </button>
+
+      <div id="demo-otp-box" class="demo-otp-box" hidden></div>
+    </div>
+
+    <div id="login-registration-step" hidden>
+      <span class="login-icon">
+        <i class="bi bi-person-plus"></i>
+      </span>
+
+      <h1>Completa la registrazione</h1>
+
+      <p>
+        Il numero è stato verificato. Inserisci i dati necessari
+        per collegare o creare la tua anagrafica.
+      </p>
+
+      <div class="registration-grid">
+        <label>
+          Nome
+<input id="registration-first-name" autocomplete="given-name" required>
+<label>Cognome</label>
+<input id="registration-last-name" autocomplete="family-name" required>
+        </label>
+
+        <label>
+          Codice fiscale
+          <input id="reg-fiscal-code"
+                 maxlength="16"
+                 autocomplete="off">
+        </label>
+
+        <label>
+          Data di nascita
+          <input id="reg-birth-date" type="date">
+        </label>
+
+        <label>
+          Email
+          <input id="reg-email"
+                 type="email"
+                 autocomplete="email">
+        </label>
+      </div>
+
+      <button id="complete-registration"
+              class="login-primary"
+              type="button">
+        Continua
+      </button>
+
+      <button id="registration-back"
+              class="login-secondary"
+              type="button">
+        Indietro
+      </button>
+    </div>
+
+    <div id="login-error" class="login-error" hidden></div>
+
+  </div>
+</div>
+
+<main class="portal-shell">
+<section class="welcome"><div><span class="eyebrow">AREA PAZIENTE</span><h1>Tutto il tuo percorso sanitario, in un unico posto</h1><p>Prenota visite ed esami, consulta documenti e referti, controlla il tuo numero di coda e gestisci le richieste verso il CUP.</p></div><a class="back-site" href="chatbot.html"><i class="bi bi-arrow-left"></i> Torna al sito</a></section>
+<nav class="service-grid" aria-label="Servizi paziente">
+<button data-view="booking" class="service active"><i class="bi bi-calendar2-check"></i><strong>Prenota Esami/Visite</strong><span>Disponibilità e costi in tempo reale</span></button>
+<button data-view="bookings" class="service"><i class="bi bi-list-check"></i><strong>Le mie prenotazioni</strong><span>Stato e dettagli delle richieste</span></button>
+<button data-view="documents" class="service"><i class="bi bi-file-earmark-medical"></i><strong>Ritiro Referti</strong><span>Referti, moduli e documenti fiscali</span></button>
+<button data-view="queue" class="service"><i class="bi bi-people"></i><strong>Numeri Coda</strong><span>Check-in e stato dell'attesa</span></button>
+<button data-view="payments" class="service"><i class="bi bi-credit-card"></i><strong>Pagamenti</strong><span>Richieste e pagamenti online</span></button>
+<button data-view="support" class="service"><i class="bi bi-headset"></i><strong>Assistenza</strong><span>Richiedi un ricontatto</span></button>
+</nav>
+
+<section id="view-booking" class="view-card portal-view active">
+<div class="view-title"><div><span class="eyebrow">PRENOTAZIONE ONLINE</span><h2>Trova la prima disponibilità</h2></div><span class="secure"><i class="bi bi-shield-check"></i> Slot verificati sulle agende CUP</span></div>
+<div class="booking-layout">
+<div class="booking-form">
+<label>Cerca prestazione<input id="service-search" placeholder="es. cardiologica, ecografia..."></label>
+<label>Prestazione<select id="service-select"></select></label>
+<div class="regime"><span>Regime</span><label><input type="radio" name="regime" value="private" checked> Privato</label><label><input type="radio" name="regime" value="ssn"> SSN</label></div>
+<div id="service-summary" class="service-summary"></div>
+<button id="search-slots" class="primary"><i class="bi bi-search"></i> Cerca disponibilità</button>
+</div>
+<div><h3>Prime disponibilità</h3><p class="lead">Privato: ricerca fino a 8 settimane · SSN: ricerca fino a 8 mesi. Prezzo o ticket sono indicati su ogni slot.</p><div id="slot-list" class="slot-list"><div class="empty">Seleziona una prestazione e cerca gli appuntamenti disponibili.</div></div></div>
+</div>
+</section>
+
+<section id="view-bookings" class="view-card portal-view"><div class="view-title"><div><span class="eyebrow">CRUSCOTTO</span><h2>Le mie prenotazioni</h2></div><button class="ghost" id="refresh-dashboard"><i class="bi bi-arrow-clockwise"></i> Aggiorna</button></div><div id="bookings-list" class="data-list"></div></section>
+<section id="view-documents" class="view-card portal-view"><div class="view-title"><div><span class="eyebrow">DOCUMENTI</span><h2>Referti e documenti</h2></div><span class="secure"><i class="bi bi-lock"></i> Accesso personale</span></div><div id="documents-list" class="data-list"></div></section>
+<section id="view-queue" class="view-card portal-view"><div class="view-title"><div><span class="eyebrow">ACCOGLIENZA</span><h2>Numeri coda e check-in</h2></div></div><p class="lead">Quando arrivi in struttura, registra la presenza sulla prenotazione. Riceverai il tuo numero e una stima dell'attesa.</p><div id="queue-bookings" class="data-list"></div><div id="queue-status" class="queue-status"></div></section>
+<section id="view-payments" class="view-card portal-view"><div class="view-title"><div><span class="eyebrow">PAGAMENTI</span><h2>Pagamenti e documenti fiscali</h2></div><span class="secure"><i class="bi bi-shield-lock"></i> Checkout protetto</span></div><div id="payments-list" class="data-list"></div></section>
+<section id="view-support" class="view-card portal-view"><div class="view-title"><div><span class="eyebrow">ASSISTENZA</span><h2>Hai bisogno di aiuto?</h2></div></div><form id="support-form" class="support-form"><label>Telefono<input id="support-phone" placeholder="Numero per il ricontatto"></label><label>Descrivi la richiesta<textarea id="support-message" rows="5" placeholder="Indica brevemente il problema o la richiesta..."></textarea></label><button class="primary" type="submit"><i class="bi bi-headset"></i> Richiedi ricontatto</button><div id="support-result"></div></form></section>
+</main>
+<div id="toast" class="toast" hidden></div>
+<script src="js/patient-portal.js?v=1.0.27"></script>
+</body></html>

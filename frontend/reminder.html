@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Annullamento appuntamento CUP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f4f7fb}
+.wrap{max-width:620px;margin:7vh auto}
+.hero{font-size:3rem}
+.detail{font-size:1.05rem}
+.btn-lg{min-height:52px}
+</style>
+</head>
+<body>
+<main class="wrap px-3">
+<div class="card shadow-sm">
+<div class="card-body p-4 p-md-5">
+
+<div class="text-center mb-4">
+
+  <img
+    id="clinic-logo"
+    class="d-none mb-3"
+    alt="Logo struttura"
+    style="max-width:260px;max-height:90px;object-fit:contain">
+
+  <div
+    id="clinic-name"
+    class="fw-bold fs-4 mb-3">
+  </div>
+
+  <div class="hero text-primary">
+    <i class="bi bi-calendar3"></i>
+  </div>
+
+  <h2>Il tuo appuntamento</h2>
+
+</div>
+
+<div id="loading" class="text-center text-muted">
+  <span class="spinner-border spinner-border-sm me-2"></span>
+  Caricamento...
+</div>
+
+<div id="content" class="d-none">
+
+  <div class="detail border rounded p-3 mb-4">
+    <div><strong id="service"></strong></div>
+    <div class="mt-2">
+      <i class="bi bi-calendar3 me-2"></i><span id="date"></span>
+    </div>
+    <div>
+      <i class="bi bi-clock me-2"></i><span id="time"></span>
+    </div>
+    <div id="doctor-row" class="d-none">
+      <i class="bi bi-person-badge me-2"></i><span id="doctor"></span>
+    </div>
+    <div id="location-row" class="d-none">
+      <i class="bi bi-geo-alt me-2"></i><span id="location"></span>
+    </div>
+  </div>
+
+  <div id="status" class="alert alert-info"></div>
+
+  <div id="cancel-panel" class="border rounded p-3">
+    <div class="fw-semibold mb-1">Vuoi annullare questo appuntamento?</div>
+    <div class="text-muted small mb-3">
+      L'appuntamento non verrà annullato finché non confermi
+      esplicitamente l'operazione.
+    </div>
+
+    <button id="start-cancel"
+            class="btn btn-outline-danger btn-lg w-100">
+      <i class="bi bi-x-circle me-1"></i>
+      Annulla appuntamento
+    </button>
+  </div>
+
+  <div id="confirm-panel"
+       class="alert alert-warning mt-3 d-none">
+    <div class="fw-bold mb-2">
+      Confermi l'annullamento?
+    </div>
+
+    <div class="mb-3">
+      Se prosegui, l'appuntamento verrà cancellato e lo slot
+      tornerà disponibile.
+    </div>
+
+    <div class="d-grid gap-2">
+      <button id="confirm-cancel"
+              class="btn btn-danger btn-lg">
+        <i class="bi bi-check2-circle me-1"></i>
+        Conferma annullamento
+      </button>
+
+      <button id="keep-booking"
+              class="btn btn-light btn-lg">
+        No, mantieni appuntamento
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div id="error" class="alert alert-danger d-none"></div>
+
+</div>
+</div>
+</main>
+
+<script>
+const q=new URLSearchParams(location.search);
+const token=q.get("token")||"";
+const api="/api/reminders";
+let booking=null;
+
+const fmt=d=>new Date(d).toLocaleDateString("it-IT",{
+  weekday:"long",
+  day:"2-digit",
+  month:"long",
+  year:"numeric"
+});
+
+async function load(){
+  try{
+
+    try{
+      const brandingResponse =
+        await fetch(
+          "/api/settings/public/branding"
+        );
+
+      if(brandingResponse.ok){
+
+        const branding =
+          await brandingResponse.json();
+
+        document.getElementById(
+          "clinic-name"
+        ).textContent =
+          branding.clinic_name || "";
+
+        if(branding.logo_url){
+
+          const logo =
+            document.getElementById(
+              "clinic-logo"
+            );
+
+          logo.src =
+            branding.logo_url;
+
+          logo.classList.remove(
+            "d-none"
+          );
+
+        }
+
+      }
+    }
+    catch(_){}
+
+
+    if(!token) throw new Error("Link non valido");
+
+    const r=await fetch(
+      `${api}/public/booking?token=${encodeURIComponent(token)}`
+    );
+
+    if(!r.ok)
+      throw new Error((await r.json()).detail||"Link non valido");
+
+    booking=await r.json();
+
+    document.getElementById("service").textContent=
+      booking.service_name||"Appuntamento";
+
+    document.getElementById("date").textContent=
+      fmt(booking.scheduled_at);
+
+    document.getElementById("time").textContent=
+      new Date(booking.scheduled_at).toLocaleTimeString(
+        "it-IT",
+        {hour:"2-digit",minute:"2-digit"}
+      );
+
+    if(booking.doctor_names?.length){
+      document.getElementById("doctor").textContent=
+        booking.doctor_names.join(", ");
+      document.getElementById("doctor-row")
+        .classList.remove("d-none");
+    }
+
+    if(booking.location){
+      document.getElementById("location").textContent=
+        booking.location;
+      document.getElementById("location-row")
+        .classList.remove("d-none");
+    }
+
+    const st=document.getElementById("status");
+
+    if(booking.status==="cancelled"){
+      st.className="alert alert-secondary";
+      st.textContent="Questo appuntamento è già stato annullato.";
+      document.getElementById("cancel-panel")
+        .classList.add("d-none");
+    }else{
+      st.className="alert alert-info";
+      st.textContent="Appuntamento attivo.";
+    }
+
+    document.getElementById("loading").classList.add("d-none");
+    document.getElementById("content").classList.remove("d-none");
+
+  }catch(e){
+    document.getElementById("loading").classList.add("d-none");
+    const er=document.getElementById("error");
+    er.textContent=e.message;
+    er.classList.remove("d-none");
+  }
+}
+
+document.getElementById("start-cancel").onclick=()=>{
+  document.getElementById("cancel-panel").classList.add("d-none");
+  document.getElementById("confirm-panel").classList.remove("d-none");
+};
+
+document.getElementById("keep-booking").onclick=()=>{
+  document.getElementById("confirm-panel").classList.add("d-none");
+  document.getElementById("cancel-panel").classList.remove("d-none");
+};
+
+document.getElementById("confirm-cancel").onclick=async()=>{
+  const btn=document.getElementById("confirm-cancel");
+  btn.disabled=true;
+
+  try{
+    const r=await fetch(`${api}/public/action`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        token,
+        action:"cancel"
+      })
+    });
+
+    if(!r.ok)
+      throw new Error(
+        (await r.json()).detail||"Operazione non riuscita"
+      );
+
+    await r.json();
+
+    const st=document.getElementById("status");
+    st.className="alert alert-success";
+    st.textContent="Appuntamento annullato correttamente.";
+
+    document.getElementById("confirm-panel")
+      .classList.add("d-none");
+    document.getElementById("cancel-panel")
+      .classList.add("d-none");
+
+  }catch(e){
+    alert(e.message);
+    btn.disabled=false;
+  }
+};
+
+load();
+</script>
+</body>
+</html>

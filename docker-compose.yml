@@ -1,0 +1,144 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: cup-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cup_system}
+      POSTGRES_USER: ${POSTGRES_USER:-cup_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./backend/app/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cup_admin} -d ${POSTGRES_DB:-cup_system}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    networks:
+      - cup-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cup-backend
+    restart: unless-stopped
+    labels:
+      cup.release: "1.0.27"
+    env_file: .env
+    environment:
+      APP_VERSION: ${APP_VERSION:-1.1.0}
+      DEV_ROLE_LOGIN_ENABLED: "true"
+      DEMO_LOGIN_USERS_ENABLED: "false"
+      DEV_LOGIN_SERVICE_SECRET: "${DEV_LOGIN_SERVICE_SECRET}"
+      VOIP_CREDENTIALS_KEY: "${VOIP_CREDENTIALS_KEY}"
+      TRAINING_CAPTURE_VOICE_ENABLED: "${TRAINING_CAPTURE_VOICE_ENABLED:-true}"
+      TRAINING_REQUIRE_CONSENT: "${TRAINING_REQUIRE_CONSENT:-true}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./data/branding:/app/data/branding
+      - ./backend/app:/app/app:ro
+      - cup_uploads:/data/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - cup-network
+      - ai-net
+
+  # OMNIA_STT_V1
+  omnia-stt:
+    build:
+      context: ./omnia-stt
+      dockerfile: Dockerfile
+    container_name: omnia-stt
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      OMNIA_RECORDING_ROOT: /recordings
+      OMNIA_WHISPER_URL: http://host.docker.internal:8090/inference
+      OMNIA_STT_POLL_SECONDS: "5"
+      OMNIA_STT_RECORDING_WAIT_SECONDS: "120"
+      OMNIA_STT_MAX_ATTEMPTS: "8"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /var/spool/mikopbx/storage/usbdisk1/mikopbx/astspool/monitor:/recordings:ro
+    networks:
+      - cup-network
+
+  frontend:
+    image: nginx:alpine
+    container_name: cup-frontend
+    restart: unless-stopped
+    labels:
+      cup.release: "1.0.27"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - cup-network
+      - proxy-net
+
+  # Servizi opzionali: non bloccano l'avvio del core CUP.
+  # Avvio: docker compose --profile telephony up -d
+  asterisk:
+    profiles: ["telephony"]
+    image: andrius/asterisk:latest
+    container_name: cup-asterisk
+    restart: unless-stopped
+    environment:
+      - AMI_USER=${AMI_USER:-cup_ami}
+      - AMI_PASSWORD=${AMI_PASSWORD:-changeme}
+    volumes:
+      - ./asterisk-config:/etc/asterisk
+    ports:
+      - "5038:5038"
+      - "5060:5060/udp"
+      - "10000-10100:10000-10100/udp"
+    networks:
+      - cup-network
+
+  # Avvio: docker compose --profile realtime up -d
+  livekit:
+    profiles: ["realtime"]
+    image: livekit/livekit-server:latest
+    container_name: cup-livekit
+    restart: unless-stopped
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./livekit-config/livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "50000-50100:50000-50100/udp"
+    networks:
+      - cup-network
+
+networks:
+  cup-network:
+    driver: bridge
+  proxy-net:
+    external: true
+
+  ai-net:
+    external: true
+
+volumes:
+  pg_data:
+  cup_uploads:

@@ -1,0 +1,4696 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Omnia Voice | Chiamate</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root{
+ --bg:#f4f7fb;--panel:#fff;--text:#172033;--muted:#697386;
+ --line:#e5eaf1;--brand:#0969da;--neg:#b42318;
+ --pos:#067647;--warn:#b54708;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:14px/1.45 Inter,system-ui,Segoe UI,sans-serif
+}
+header{
+ height:68px;background:#fff;border-bottom:1px solid var(--line);
+ display:flex;align-items:center;padding:0 24px;gap:12px;
+ position:sticky;top:0;z-index:10
+}
+.brand{font-size:18px;font-weight:800}
+.brand i{color:var(--brand)}
+.grow{flex:1}
+
+/* OMNIA_VOICE_DELETE_UI_V1 */
+
+.omnia-clear-history{
+ color:#b42318;
+ border-color:#f0b8b3;
+ background:#fff;
+ cursor:pointer;
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ transition:
+  background .15s ease,
+  border-color .15s ease,
+  color .15s ease;
+}
+
+.omnia-clear-history:hover{
+ background:#fff5f4;
+ border-color:#e58a82;
+ color:#8f1d14;
+}
+
+.omnia-clear-history:disabled{
+ opacity:.55;
+ cursor:not-allowed;
+}
+
+/* /OMNIA_VOICE_DELETE_UI_V1 */
+button,input,select{
+ border:1px solid var(--line);border-radius:10px;background:#fff;
+ padding:10px 12px
+}
+.layout{
+ display:grid;grid-template-columns:370px 1fr;
+ min-height:calc(100vh - 68px)
+}
+.sidebar{
+ background:#fff;border-right:1px solid var(--line);overflow:auto
+}
+.filters{
+ padding:16px;border-bottom:1px solid var(--line);
+ display:grid;gap:9px
+}
+.filters input{width:100%}
+.filter-row{display:flex;gap:8px}
+.filter-row select{flex:1}
+.item{
+ padding:15px 17px;border-bottom:1px solid var(--line);
+ cursor:pointer
+}
+.item:hover,.item.active{background:#f5f9ff}
+.item-head{display:flex;gap:8px;align-items:center}
+.phone{font-weight:800}
+.time{margin-left:auto;color:var(--muted);font-size:11px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+.contact-name{
+ font-weight:800;
+ font-size:15px;
+ line-height:1.25;
+}
+
+.contact-phone{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:2px;
+}
+
+.preview{
+ color:#475467;
+ font-size:12px;
+ line-height:1.4;
+ margin-top:8px;
+ display:-webkit-box;
+ -webkit-line-clamp:2;
+ -webkit-box-orient:vertical;
+ overflow:hidden;
+}
+
+.item.active .preview,
+.item:hover .preview{
+ color:#344054;
+}
+
+.recognized{
+ display:inline-flex;
+ align-items:center;
+ gap:4px;
+ color:#067647;
+ font-size:11px;
+ font-weight:700;
+ margin-top:5px;
+}
+
+.recognized i{
+ font-size:12px;
+}
+
+.badge{
+ display:inline-block;padding:3px 8px;border-radius:99px;
+ background:#eef2f6;font-size:11px;font-weight:800
+}
+.badge.negative{background:#fee4e2;color:var(--neg)}
+.badge.positive{background:#dcfae6;color:var(--pos)}
+.badge.handoff{background:#fff1e8;color:var(--warn)}
+main{padding:22px}
+.card{
+ background:#fff;border:1px solid var(--line);border-radius:16px;
+ box-shadow:0 12px 34px rgba(20,35,60,.07)
+}
+.person{padding:20px;display:flex;gap:14px;align-items:center}
+.avatar{
+ width:48px;height:48px;border-radius:50%;background:#eaf2ff;
+ display:grid;place-items:center;color:var(--brand);font-size:20px
+}
+.title{font-weight:800;font-size:19px}
+.sub{color:var(--muted)}
+.metrics{
+ margin-top:14px;padding:14px;
+ display:grid;grid-template-columns:repeat(5,1fr)
+}
+.metric{padding:8px 12px}
+.metric small{
+ display:block;color:var(--muted);font-size:10px;
+ text-transform:uppercase
+}
+.metric strong{display:block;margin-top:5px}
+.notice{
+ margin-top:14px;padding:13px;border-radius:12px;
+ background:#fff7ed;border:1px solid #fed7aa
+}
+.transcript{margin-top:14px;padding:20px}
+.transcript h2{font-size:16px}
+.msg{display:flex;margin:10px 0}
+.bubble{
+ max-width:78%;padding:10px 13px;border-radius:14px;
+ border:1px solid var(--line)
+}
+.msg.user{justify-content:flex-end}
+.msg.user .bubble{
+ background:#172b4d;color:#fff;border-color:#172b4d
+}
+.msg.assistant .bubble{background:#eff6ff}
+.msg.operator .bubble{background:#ecfdf3}
+.msg.system{justify-content:center}
+.msg.system .bubble{
+ background:#fff8eb;color:#7a2e0e;border-color:#fedf89
+}
+.who{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ opacity:.7;margin-bottom:3px
+}
+.when{font-size:10px;opacity:.6;margin-top:4px}
+.empty{
+ min-height:60vh;display:grid;place-items:center;
+ color:var(--muted);text-align:center
+}
+
+.voice-type{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+}
+
+.badge.voice-ai{
+ background:#e0f2fe;
+ color:#0369a1;
+}
+
+.badge.operator{
+ background:#dcfce7;
+ color:#166534;
+}
+
+.badge.missed{
+ background:#fee2e2;
+ color:#b42318;
+}
+
+.badge.active-call{
+ background:#fff7ed;
+ color:#b54708;
+}
+
+.call-metadata{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px;
+ margin-top:14px;
+}
+
+.call-meta{
+ border:1px solid var(--line);
+ border-radius:10px;
+ padding:10px 12px;
+ background:#f8fafc;
+}
+
+.call-meta small{
+ display:block;
+ color:var(--muted);
+ font-size:10px;
+ text-transform:uppercase;
+ margin-bottom:3px;
+}
+
+.section-label{
+ padding:8px 17px;
+ background:#f8fafc;
+ border-bottom:1px solid var(--line);
+ font-size:10px;
+ font-weight:800;
+ color:var(--muted);
+ text-transform:uppercase;
+ letter-spacing:.05em;
+}
+
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ .sidebar{max-height:42vh;border-right:0}
+ .metrics{grid-template-columns:1fr 1fr}
+ main{padding:12px}
+}
+
+
+/* OMNIA_VOICE_LIVE_V2 */
+
+.omnia-live-state{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.025em;
+}
+
+.omnia-voice-live,
+.omnia-voice-ringing{
+  background:#dcfce7;
+  color:#15803d;
+}
+
+.omnia-voice-held{
+  background:#fef3c7;
+  color:#a16207;
+}
+
+.omnia-voice-closed{
+  background:#f1f5f9;
+  color:#64748b;
+}
+
+.omnia-voice-missed{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+
+.item.omnia-call-live-item{
+  position:relative;
+  border-left:4px solid #22c55e;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(34,197,94,.055),
+      transparent 50%
+    );
+}
+
+.item.omnia-call-live-item::after{
+  content:"";
+  position:absolute;
+  right:10px;
+  top:10px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:
+    0 0 0 0
+    rgba(34,197,94,.45);
+  animation:
+    omnia-live-pulse
+    1.5s infinite;
+}
+
+
+@keyframes omnia-live-pulse{
+
+  0%{
+    box-shadow:
+      0 0 0 0
+      rgba(34,197,94,.40);
+  }
+
+  70%{
+    box-shadow:
+      0 0 0 7px
+      rgba(34,197,94,0);
+  }
+
+  100%{
+    box-shadow:
+      0 0 0 0
+      rgba(34,197,94,0);
+  }
+}
+
+
+.omnia-call-live-banner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:12px;
+  padding:11px 14px;
+  border-radius:12px;
+  border:1px solid #e2e8f0;
+}
+
+.omnia-call-live-banner.omnia-voice-live,
+.omnia-call-live-banner.omnia-voice-ringing{
+  border-color:#86efac;
+  background:#f0fdf4;
+}
+
+.omnia-call-live-banner.omnia-voice-held{
+  border-color:#fde68a;
+  background:#fffbeb;
+}
+
+.omnia-call-live-banner.omnia-voice-closed{
+  background:#f8fafc;
+}
+
+.omnia-call-live-banner.omnia-voice-missed{
+  border-color:#fecaca;
+  background:#fef2f2;
+}
+
+.omnia-live-main{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.omnia-live-main strong{
+  font-size:12px;
+  font-weight:800;
+}
+
+.omnia-live-main span,
+.omnia-live-pulse,
+.omnia-live-ended{
+  font-size:11px;
+}
+
+.omnia-live-pulse{
+  color:#15803d;
+  font-weight:700;
+}
+
+.omnia-live-ended{
+  color:#64748b;
+}
+
+
+
+/* OMNIA_VOICE_LIVE_RED_V1 */
+
+.omnia-live-state.omnia-voice-live,
+.omnia-live-state.omnia-voice-ringing {
+  background:#fef2f2 !important;
+  color:#b91c1c !important;
+  border:1px solid #fecaca;
+}
+
+.omnia-live-state.omnia-voice-live::before,
+.omnia-live-state.omnia-voice-ringing::before {
+  content:"";
+  display:inline-block;
+  width:8px;
+  height:8px;
+  margin-right:6px;
+  border-radius:50%;
+  background:#dc2626;
+  animation:
+    omnia-live-red-blink
+    .9s infinite;
+}
+
+.item.omnia-call-live-item {
+  border-left-color:#dc2626 !important;
+}
+
+.item.omnia-call-live-item::after {
+  background:#dc2626 !important;
+  animation:
+    omnia-live-red-blink
+    .9s infinite !important;
+}
+
+@keyframes omnia-live-red-blink {
+  0%,100% {
+    opacity:1;
+    box-shadow:
+      0 0 0 0
+      rgba(220,38,38,.45);
+  }
+  50% {
+    opacity:.25;
+    box-shadow:
+      0 0 0 7px
+      rgba(220,38,38,0);
+  }
+}
+
+.omnia-transcription-info {
+  margin-top:12px;
+  padding:11px 13px;
+  border-radius:10px;
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  color:#1e3a8a;
+  font-size:12px;
+  line-height:1.45;
+}
+
+
+/* OMNIA_VOICE_LIVE_RED_V1 */
+
+.omnia-live-state.omnia-voice-live,
+.omnia-live-state.omnia-voice-ringing {
+  background:#fef2f2 !important;
+  color:#b91c1c !important;
+  border:1px solid #fecaca;
+}
+
+.omnia-live-state.omnia-voice-live::before,
+.omnia-live-state.omnia-voice-ringing::before {
+  content:"";
+  display:inline-block;
+  width:8px;
+  height:8px;
+  margin-right:6px;
+  border-radius:50%;
+  background:#dc2626;
+  animation:
+    omnia-live-red-blink
+    .9s infinite;
+}
+
+.item.omnia-call-live-item {
+  border-left-color:#dc2626 !important;
+}
+
+.item.omnia-call-live-item::after {
+  background:#dc2626 !important;
+  animation:
+    omnia-live-red-blink
+    .9s infinite !important;
+}
+
+@keyframes omnia-live-red-blink {
+  0%,100% {
+    opacity:1;
+    box-shadow:
+      0 0 0 0
+      rgba(220,38,38,.45);
+  }
+  50% {
+    opacity:.25;
+    box-shadow:
+      0 0 0 7px
+      rgba(220,38,38,0);
+  }
+}
+
+.omnia-transcription-info {
+  margin-top:12px;
+  padding:11px 13px;
+  border-radius:10px;
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  color:#1e3a8a;
+  font-size:12px;
+  line-height:1.45;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+ <div class="brand">
+  <i class="bi bi-headset"></i>
+  Omnia Voice
+ </div>
+ <span class="badge">Live</span>
+ <div class="grow"></div>
+
+ <button
+  id="omnia-clear-history"
+  class="omnia-clear-history"
+  onclick="clearOmniaVoiceHistory()"
+  title="Cancella la cronologia Omnia Voice">
+  <i class="bi bi-trash3"></i>
+  Pulisci test
+ </button>
+
+ <button onclick="loadData()">
+  <i class="bi bi-arrow-clockwise"></i>
+  Aggiorna
+ </button>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+ <div class="filters">
+  <input
+   id="q"
+   placeholder="Cerca paziente, numero, testo, intent..."
+   oninput="renderUnifiedList()"
+  >
+
+  <div class="filter-row">
+
+   <select
+    id="call-type"
+    onchange="renderUnifiedList()">
+
+    <option value="">
+     Tutte le chiamate
+    </option>
+
+    <option value="voice_ai">
+     Voice AI
+    </option>
+
+    <option value="operator">
+     Operatore
+    </option>
+
+    <option value="missed">
+     Perse
+    </option>
+
+    <option value="active">
+     In corso
+    </option>
+
+   </select>
+
+  </div>
+
+  <div class="filter-row">
+   <select id="sentiment" onchange="renderUnifiedList()">
+    <option value="">Tutti i sentiment</option>
+    <option value="positive">Positivo</option>
+    <option value="neutral">Neutro</option>
+    <option value="negative">Negativo</option>
+   </select>
+
+   <select id="handoff" onchange="renderUnifiedList()">
+    <option value="">Tutti</option>
+    <option value="1">Con handoff</option>
+    <option value="0">Senza handoff</option>
+   </select>
+  </div>
+ </div>
+
+ <div id="list"></div>
+</aside>
+
+<main>
+ <div id="detail" class="empty">
+  <div>
+   <i class="bi bi-telephone-inbound" style="font-size:40px"></i>
+   <p>Seleziona una conversazione.</p>
+  </div>
+ </div>
+</main>
+
+</div>
+
+<script>
+let items=[];
+let calls=[];
+let selected=null;
+let selectedUnified=null;
+
+function token(){
+
+ const storages=[
+  localStorage,
+  sessionStorage
+ ];
+
+ const preferredKeys=[
+  "access_token",
+  "token",
+  "cup_token",
+  "auth_token",
+  "jwt",
+  "jwt_token",
+  "accessToken",
+  "authToken",
+  "cup_access_token"
+ ];
+
+ function clean(value){
+
+  if(!value)
+   return "";
+
+  value=String(value).trim();
+
+  if(
+   value.startsWith('"') &&
+   value.endsWith('"')
+  ){
+   try{
+    value=JSON.parse(value);
+   }catch(e){}
+  }
+
+  return String(value || "").trim();
+ }
+
+ function looksLikeJwt(value){
+
+  if(!value)
+   return false;
+
+  return value.split(".").length===3;
+ }
+
+ function inspectValue(raw){
+
+  const value=clean(raw);
+
+  if(!value)
+   return "";
+
+  if(looksLikeJwt(value))
+   return value;
+
+  try{
+
+   const obj=JSON.parse(value);
+
+   if(obj && typeof obj==="object"){
+
+    const candidates=[
+     obj.access_token,
+     obj.accessToken,
+     obj.token,
+     obj.jwt,
+     obj.jwt_token,
+     obj.auth_token,
+     obj.authToken
+    ];
+
+    for(const candidate of candidates){
+
+     const cleaned=clean(candidate);
+
+     if(looksLikeJwt(cleaned))
+      return cleaned;
+    }
+
+    // Ricerca anche un livello annidato.
+    for(const nested of Object.values(obj)){
+
+     if(
+      nested &&
+      typeof nested==="object"
+     ){
+
+      for(const key of [
+       "access_token",
+       "accessToken",
+       "token",
+       "jwt",
+       "auth_token"
+      ]){
+
+       const cleaned=clean(
+        nested[key]
+       );
+
+       if(looksLikeJwt(cleaned))
+        return cleaned;
+      }
+     }
+    }
+   }
+
+  }catch(e){}
+
+  return "";
+ }
+
+ // Prima le chiavi più probabili.
+ for(const storage of storages){
+
+  for(const key of preferredKeys){
+
+   const result=inspectValue(
+    storage.getItem(key)
+   );
+
+   if(result)
+    return result;
+  }
+ }
+
+ // Poi scansione completa dello storage.
+ for(const storage of storages){
+
+  for(let i=0;i<storage.length;i++){
+
+   const key=storage.key(i);
+
+   const result=inspectValue(
+    storage.getItem(key)
+   );
+
+   if(result){
+
+    console.debug(
+     "CUP auth token rilevato in",
+     key
+    );
+
+    return result;
+   }
+  }
+ }
+
+ return "";
+}
+
+function esc(value){
+ return String(value ?? "").replace(
+  /[&<>"']/g,
+  char => ({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#039;"
+  })[char]
+ );
+}
+
+/*
+ * OMNIA_VOICE_TIMEZONE_V1
+ *
+ * Il backend salva i timestamp applicativi in UTC.
+ * Alcuni datetime vengono serializzati senza "Z".
+ *
+ * Un timestamp ISO senza timezone deve quindi essere
+ * interpretato esplicitamente come UTC.
+ */
+function omniaVoiceDate(value){
+
+ if(!value)
+  return null;
+
+ if(value instanceof Date)
+  return value;
+
+ let raw =
+  String(value).trim();
+
+ if(!raw)
+  return null;
+
+ /*
+  * Timestamp ISO già timezone-aware:
+  *
+  * 2026-08-30T22:39:00Z
+  * 2026-08-30T22:39:00+00:00
+  * 2026-08-31T00:39:00+02:00
+  *
+  * non vengono modificati.
+  */
+ const timezonePresent =
+  /(?:Z|[+-]\d{2}:?\d{2})$/i.test(raw);
+
+ /*
+  * Il backend usa datetime UTC naive.
+  * Se abbiamo un ISO datetime senza timezone,
+  * aggiungiamo Z.
+  */
+ if(
+  !timezonePresent &&
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(raw)
+ ){
+  raw += "Z";
+ }
+
+ const date =
+  new Date(raw);
+
+ if(Number.isNaN(date.getTime()))
+  return null;
+
+ return date;
+}
+
+
+function dateTime(value){
+
+ const date =
+  omniaVoiceDate(value);
+
+ if(!date)
+  return "";
+
+ return new Intl.DateTimeFormat(
+  "it-IT",
+  {
+   timeZone:"Europe/Rome",
+   day:"2-digit",
+   month:"2-digit",
+   hour:"2-digit",
+   minute:"2-digit"
+  }
+ ).format(date);
+}
+
+/* /OMNIA_VOICE_TIMEZONE_V1 */
+
+
+function lastMessage(item){
+
+ const messages=item.messages || [];
+
+ if(!messages.length)
+  return "";
+
+ // Evita che un messaggio di sistema sia il preview
+ // se esiste una frase utente/AI precedente.
+ for(let i=messages.length-1;i>=0;i--){
+
+  const message=messages[i];
+
+  if(
+   message &&
+   message.content &&
+   (
+    message.role==="user" ||
+    message.role==="assistant" ||
+    message.role==="operator"
+   )
+  ){
+   return message.content.trim();
+  }
+ }
+
+ return (
+  messages[messages.length-1]?.content
+  || ""
+ ).trim();
+}
+
+
+function formattedPhone(value){
+
+ if(!value)
+  return "";
+
+ // Formattazione leggera solo per numeri italiani E.164.
+ const match=String(value).match(
+  /^\+39(\d{3})(\d{3})(\d{4})$/
+ );
+
+ if(match){
+  return `+39 ${match[1]} ${match[2]} ${match[3]}`;
+ }
+
+ return value;
+}
+
+
+function badge(value,extra=""){
+ return `<span class="badge ${esc(value)} ${extra}">
+  ${esc(value || "—")}
+ </span>`;
+}
+
+
+async function silentOperatorLogin(){
+
+ const response=await fetch(
+  "/api/auth/dev-login",
+  {
+   method:"POST",
+   headers:{
+    "Content-Type":"application/json"
+   },
+   body:JSON.stringify({
+    role:"operator"
+   }),
+   credentials:"same-origin"
+  }
+ );
+
+ if(!response.ok)
+  return "";
+
+ const data=await response.json();
+
+ const jwt=data.access_token || "";
+
+ if(jwt){
+  sessionStorage.setItem(
+   "voice_operator_token",
+   jwt
+  );
+ }
+
+ return jwt;
+}
+
+
+function voiceToken(){
+
+ const dedicated=
+  sessionStorage.getItem(
+   "voice_operator_token"
+  );
+
+ if(dedicated)
+  return dedicated;
+
+ // Compatibilità con eventuale login console.
+ return token();
+}
+
+
+async function fetchVoiceConversations(jwt){
+
+ const headers={};
+
+ if(jwt){
+  headers.Authorization=
+   `Bearer ${jwt}`;
+ }
+
+ return await fetch(
+  "/api/voice-v2/conversations?limit=100",
+  {
+   headers,
+   credentials:"same-origin"
+  }
+ );
+}
+
+
+
+/*
+ * OMNIA_VOICE_CLEAR_HISTORY_V1
+ *
+ * Cancella lo storico Call tramite endpoint amministrativo.
+ * Non elimina pazienti, prenotazioni o configurazioni PBX.
+ */
+async function clearOmniaVoiceHistory(){
+
+ const button =
+  document.getElementById(
+   "omnia-clear-history"
+  );
+
+ const total =
+  Array.isArray(calls)
+   ? calls.length
+   : 0;
+
+ if(total === 0){
+
+  window.alert(
+   "Non ci sono chiamate da eliminare."
+  );
+
+  return;
+ }
+
+
+ const confirmed =
+  window.confirm(
+   "Eliminare tutte le chiamate presenti in Omnia Voice?\n\n" +
+   "Verranno cancellate " +
+   total +
+   " chiamate e le relative informazioni collegate.\n\n" +
+   "Pazienti e prenotazioni non saranno eliminati."
+  );
+
+
+ if(!confirmed)
+  return;
+
+
+ if(button){
+
+  button.disabled = true;
+
+  button.innerHTML =
+   '<i class="bi bi-hourglass-split"></i> Eliminazione...';
+ }
+
+
+ try{
+
+  let jwt =
+   voiceToken();
+
+
+  const request = async token => {
+
+   const headers = {};
+
+   if(token){
+    headers.Authorization =
+     `Bearer ${token}`;
+   }
+
+   return fetch(
+    "/api/calls/history",
+    {
+     method:"DELETE",
+     headers,
+     credentials:"same-origin"
+    }
+   );
+  };
+
+
+  let response =
+   await request(jwt);
+
+
+  /*
+   * Prova silent login come le altre API
+   * della console Omnia Voice.
+   */
+  if(
+   response.status === 401 ||
+   response.status === 403
+  ){
+
+   sessionStorage.removeItem(
+    "voice_operator_token"
+   );
+
+   jwt =
+    await silentOperatorLogin();
+
+   if(jwt)
+    response =
+     await request(jwt);
+  }
+
+
+  if(!response.ok){
+
+   let message = "";
+
+   try{
+    message =
+     await response.text();
+   }catch(_){}
+
+   if(response.status === 403){
+
+    throw new Error(
+     "Operazione consentita esclusivamente agli amministratori."
+    );
+   }
+
+   throw new Error(
+    message ||
+    `Errore HTTP ${response.status}`
+   );
+  }
+
+
+  const result =
+   await response.json();
+
+
+  /*
+   * Azzera subito lo stato locale.
+   * loadData() effettuerà poi la verifica
+   * definitiva sul backend.
+   */
+  calls = [];
+
+
+  await loadData();
+
+
+  window.alert(
+   `Pulizia completata.\n\n` +
+   `Chiamate eliminate: ${result.deleted ?? total}`
+  );
+
+ }
+ catch(error){
+
+  console.error(
+   "[OMNIA VOICE] CLEAR HISTORY ERROR",
+   error
+  );
+
+  window.alert(
+   "Impossibile cancellare la cronologia.\n\n" +
+   error.message
+  );
+
+ }
+ finally{
+
+  if(button){
+
+   button.disabled = false;
+
+   button.innerHTML =
+    '<i class="bi bi-trash3"></i> Pulisci test';
+  }
+ }
+}
+
+/* /OMNIA_VOICE_CLEAR_HISTORY_V1 */
+
+
+async function fetchCallRegistry(jwt){
+
+ const headers={};
+
+ if(jwt){
+  headers.Authorization=
+   `Bearer ${jwt}`;
+ }
+
+ return fetch(
+  "/api/calls/voice-registry?limit=200",
+  {
+   headers,
+   credentials:"same-origin"
+  }
+ );
+}
+
+
+function phoneDigits(value){
+
+ return String(value||"")
+  .replace(/\D/g,"")
+  .replace(/^39(?=\d{10}$)/,"");
+}
+
+
+function callConversationMatch(call){
+
+ /*
+  * OMNIA_VOICE_CALL_PRIMARY_V1
+  *
+  * Dal Registry V2 ogni Call arriva gia'
+  * con la propria trascrizione delimitata
+  * temporalmente.
+  *
+  * Non facciamo piu' matching fuzzy per
+  * numero + timestamp.
+  */
+
+ if(!call)
+  return null;
+
+
+ return {
+  id:`call-${call.id}`,
+
+  sender_id:
+   call.sender_id ||
+   call.caller_number ||
+   "",
+
+  patient_id:
+   call.patient_id ||
+   null,
+
+  patient_name:
+   call.patient_name ||
+   call.patient?.full_name ||
+   null,
+
+  created_at:
+   call.started_at,
+
+  updated_at:
+   call.ended_at ||
+   call.started_at,
+
+  messages:
+   Array.isArray(call.messages)
+    ?call.messages
+    :[],
+
+  message_count:
+   Number(call.message_count) ||
+   (
+    Array.isArray(call.messages)
+     ?call.messages.length
+     :0
+   ),
+
+  voice:
+   call.voice || {
+    intent:call.ai_intent,
+    sentiment:call.ai_sentiment,
+    confidence:
+     Number(call.ai_confidence || 0) / 100
+   }
+ };
+}
+
+
+function unifiedEntries(){
+
+ /*
+  * Call e' adesso la sorgente principale.
+  *
+  * Una telefonata = una voce di lista.
+  * La ChatSession resta relazione di
+  * supporto per transcript/journey.
+  */
+
+ if(Array.isArray(calls) && calls.length){
+
+  return [...calls]
+   .sort((a,b)=>{
+
+    const aLive=
+     ["ringing","active","held"]
+      .includes(a.status);
+
+    const bLive=
+     ["ringing","active","held"]
+      .includes(b.status);
+
+    if(aLive!==bLive)
+     return aLive ? -1 : 1;
+
+    return (
+     (omniaVoiceDate(b.started_at)?.getTime() || 0) -
+     (omniaVoiceDate(a.started_at)?.getTime() || 0)
+    );
+   })
+   .map(call=>({
+    key:`call:${call.id}`,
+    kind:"call",
+    call,
+    voice:
+     callConversationMatch(call)
+   }));
+ }
+
+
+ /*
+  * Fallback compatibilita' soltanto nel caso
+  * in cui il registry Asterisk sia vuoto.
+  */
+ return (items||[])
+  .map(voice=>({
+   key:`voice:${voice.id}`,
+   kind:"voice",
+   voice,
+   call:null
+  }))
+  .sort((a,b)=>
+   (
+    omniaVoiceDate(
+     b.voice?.updated_at ||
+     b.voice?.created_at
+    )?.getTime() || 0
+   ) -
+   (
+    omniaVoiceDate(
+     a.voice?.updated_at ||
+     a.voice?.created_at
+    )?.getTime() || 0
+   )
+  );
+}
+
+
+function callTypeLabel(call){
+
+ if(!call)
+  return "Voice AI";
+
+ if(call.call_type==="voice_ai")
+  return "Voice AI";
+
+ if(call.call_type==="operator")
+  return call.operator_extension
+   ?`Operatore · ${call.operator_extension}`
+   :"Operatore";
+
+ return "Telefonata";
+}
+
+
+function callTypeClass(call){
+
+ if(call?.status==="missed")
+  return "missed";
+
+ if(
+  call?.status==="active" ||
+  call?.status==="ringing"
+ )
+  return "active-call";
+
+ if(call?.call_type==="operator")
+  return "operator";
+
+ return "voice-ai";
+}
+
+
+function callStatusLabel(call){
+
+ if(!call)
+  return "";
+
+ const labels={
+  ringing:"In ingresso",
+  active:"In corso",
+  held:"In attesa",
+  ended:"Terminata",
+  missed:"Persa"
+ };
+
+ return labels[call.status]||
+        call.status||
+        "—";
+}
+
+
+function durationLabel(seconds){
+
+ seconds=Number(seconds);
+
+ if(!Number.isFinite(seconds))
+  return "—";
+
+ const minutes=
+  Math.floor(seconds/60);
+
+ const rest=
+  seconds%60;
+
+ if(minutes<=0)
+  return `${rest} sec`;
+
+ return `${minutes} min ${rest} sec`;
+}
+
+
+async function loadData(){
+
+ let jwt=voiceToken();
+
+ let response=
+  await fetchVoiceConversations(jwt);
+
+ // Sessione scaduta o token della console non utilizzabile.
+ if(
+  response.status===401 ||
+  response.status===403
+ ){
+
+  sessionStorage.removeItem(
+   "voice_operator_token"
+  );
+
+  jwt=await silentOperatorLogin();
+
+  if(jwt){
+   response=
+    await fetchVoiceConversations(jwt);
+  }
+ }
+
+
+ if(
+  response.status===401 ||
+  response.status===403
+ ){
+  document.getElementById(
+   "detail"
+  ).innerHTML=`
+   <div class="notice">
+    <b>Autenticazione operatore non disponibile.</b><br>
+    Il silent login della demo non è attivo.
+   </div>
+  `;
+
+  return;
+ }
+
+
+ if(!response.ok){
+  throw new Error(
+   await response.text()
+  );
+ }
+
+
+ const payload=
+  await response.json();
+
+ items=payload.items || [];
+
+
+ /*
+  * Carica anche il registro Asterisk.
+  */
+ let callsResponse=
+  await fetchCallRegistry(jwt);
+
+ if(
+  callsResponse.status===401 ||
+  callsResponse.status===403
+ ){
+
+  jwt=await silentOperatorLogin();
+
+  if(jwt){
+   callsResponse=
+    await fetchCallRegistry(jwt);
+  }
+ }
+
+ if(callsResponse.ok){
+
+  const callPayload=
+   await callsResponse.json();
+
+  calls=
+   callPayload.items||[];
+ }
+
+
+ renderUnifiedList();
+
+
+ if(selectedUnified){
+
+  const updated=
+   unifiedEntries().find(
+    entry=>
+     entry.key===selectedUnified
+   );
+
+  if(updated)
+   showUnified(updated);
+ }
+
+
+ if(selected){
+
+  const updated=items.find(
+   item=>item.id===selected.id
+  );
+
+  if(updated){
+   selected=updated;
+
+   if(!selectedUnified){
+    show(updated);
+   }
+  }
+ }
+}
+
+function filtered(){
+
+ const q=document
+  .getElementById("q")
+  .value
+  .toLowerCase()
+  .trim();
+
+ const sentiment=document
+  .getElementById("sentiment")
+  .value;
+
+ const handoff=document
+  .getElementById("handoff")
+  .value;
+
+ return items.filter(item=>{
+
+  const voice=item.voice || {};
+
+  const text=(item.messages || [])
+   .map(message=>message.content)
+   .join(" ")
+   .toLowerCase();
+
+  if(
+   q &&
+   !`${item.patient_name || ""} ${item.sender_id || ""} ${voice.intent || ""} ${text}`
+    .toLowerCase()
+    .includes(q)
+  )
+   return false;
+
+  if(
+   sentiment &&
+   (voice.sentiment_overall || voice.sentiment)
+    !== sentiment
+  )
+   return false;
+
+  if(
+   handoff!=="" &&
+   Boolean(voice.handoff)!==(handoff==="1")
+  )
+   return false;
+
+  return true;
+ });
+}
+
+
+
+function renderUnifiedList(){
+
+ const q=document
+  .getElementById("q")
+  .value
+  .toLowerCase()
+  .trim();
+
+ const callType=document
+  .getElementById("call-type")
+  .value;
+
+ const sentiment=document
+  .getElementById("sentiment")
+  .value;
+
+ const handoff=document
+  .getElementById("handoff")
+  .value;
+
+ let entries=
+  unifiedEntries();
+
+
+ entries=entries.filter(entry=>{
+
+  const call=entry.call;
+  const voice=entry.voice;
+  const v=voice?.voice||{};
+  const patient=call?.patient||{};
+
+  if(callType){
+
+   if(callType==="missed"){
+
+    if(call?.status!=="missed")
+     return false;
+
+   }
+
+   else if(callType==="active"){
+
+    if(
+     !call ||
+     !["active","ringing"]
+      .includes(call.status)
+    )
+     return false;
+
+   }
+
+   else if(callType==="voice_ai"){
+
+    if(
+     call
+      ?call.call_type!=="voice_ai"
+      :!voice
+    )
+     return false;
+
+   }
+
+   else if(callType==="operator"){
+
+    if(
+     !call ||
+     call.call_type!=="operator"
+    )
+     return false;
+   }
+  }
+
+
+  if(sentiment){
+
+   if(
+    !voice ||
+    (
+     v.sentiment_overall||
+     v.sentiment
+    )!==sentiment
+   )
+    return false;
+  }
+
+
+  if(handoff!==""){
+
+   if(
+    !voice ||
+    Boolean(v.handoff)!==
+     (handoff==="1")
+   )
+    return false;
+  }
+
+
+  if(q){
+
+   const text=[
+    call?.caller_number,
+    call?.callee_number,
+    call?.operator_extension,
+    patient.full_name,
+    voice?.patient_name,
+    voice?.sender_id,
+    v.intent,
+    ...(voice?.messages||[])
+      .map(x=>x.content)
+   ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+   if(!text.includes(q))
+    return false;
+  }
+
+
+  return true;
+ });
+
+
+ const html=
+  entries.map(entry=>{
+
+   const call=entry.call;
+   const voice=entry.voice;
+   const patient=call?.patient||{};
+
+   const name=
+    patient.full_name||
+    voice?.patient_name||
+    call?.caller_number||
+    voice?.sender_id||
+    "Chiamante";
+
+   const number=
+    formattedPhone(
+     call?.caller_number||
+     voice?.sender_id||
+     ""
+    );
+
+   const when=
+    call?.started_at||
+    voice?.updated_at;
+
+   const preview=
+    voice
+     ?lastMessage(voice)
+     :"";
+
+   const typeLabel=
+    callTypeLabel(call);
+
+   const typeClass=
+    callTypeClass(call);
+
+   const recognized=
+    Boolean(
+     call?.patient_id||
+     voice?.patient_id
+    );
+
+   return `
+    <div
+     class="item ${
+      selectedUnified===entry.key
+       ?"active"
+       :""
+     }"
+     data-unified-key="${esc(entry.key)}">
+
+     <div class="item-head">
+
+      <i class="bi ${
+       call?.call_type==="operator"
+        ?"bi-headset"
+        :"bi-telephone"
+      }"></i>
+
+      <div style="min-width:0;flex:1">
+
+       <div class="contact-name">
+        ${esc(name)}
+       </div>
+
+       ${
+        number &&
+        String(name)!==String(number)
+         ?`
+          <div class="contact-phone">
+           ${esc(number)}
+          </div>
+         `
+         :""
+       }
+
+      </div>
+
+      <span class="time">
+       ${dateTime(when)}
+      </span>
+
+     </div>
+
+
+     <div class="recognized" style="${
+      recognized
+       ?""
+       :"color:#b54708"
+     }">
+
+      <i class="bi ${
+       recognized
+        ?"bi-check-circle-fill"
+        :"bi-exclamation-circle"
+      }"></i>
+
+      ${
+       recognized
+        ?"Paziente riconciliato"
+        :"numero non in anagrafica Pazienti"
+      }
+
+     </div>
+
+
+     ${
+      preview
+       ?`
+        <div class="preview">
+         “${esc(preview)}”
+        </div>
+       `
+       :""
+     }
+
+
+     <div class="badges">
+
+      <span class="badge ${typeClass}">
+       ${esc(typeLabel)}
+      </span>
+
+      ${
+       call
+        ?`
+         <span class="badge">
+          ${esc(
+           callStatusLabel(call)
+          )}
+         </span>
+        `
+        :""
+      }
+
+      ${
+       voice?.voice?.intent
+        ?badge(
+          voice.voice.intent
+         )
+        :""
+      }
+
+      ${
+       voice
+        ?`
+         <span class="badge">
+          ${voice.message_count||0} msg
+         </span>
+        `
+        :""
+      }
+
+     </div>
+
+    </div>
+   `;
+
+  }).join("");
+
+
+ document.getElementById(
+  "list"
+ ).innerHTML=
+  html||
+  `<div class="empty">
+   Nessuna chiamata registrata.
+  </div>`;
+
+
+ document
+  .querySelectorAll(
+   "[data-unified-key]"
+  )
+  .forEach(el=>{
+
+   el.addEventListener(
+    "click",
+    ()=>{
+
+     selectedUnified=
+      el.dataset.unifiedKey;
+
+     const entry=
+      unifiedEntries().find(
+       item=>
+        item.key===
+        selectedUnified
+      );
+
+     renderUnifiedList();
+
+     if(entry)
+      showUnified(entry);
+    }
+   );
+
+  });
+}
+
+
+function showUnified(entry){
+
+ if(
+  entry.kind==="voice" &&
+  !entry.call
+ ){
+  selected=entry.voice;
+  show(entry.voice);
+  return;
+ }
+
+
+ const call=entry.call;
+ const voice=entry.voice;
+ const patient=call?.patient||{};
+
+ const name=
+  patient.full_name||
+  voice?.patient_name||
+  call?.caller_number||
+  "Chiamante";
+
+ const number=
+  formattedPhone(
+   call?.caller_number||
+   voice?.sender_id||
+   ""
+  );
+
+ const recognized=
+  Boolean(
+   call?.patient_id||
+   voice?.patient_id
+  );
+
+
+ const messages=
+  (voice?.messages||[])
+   .map(message=>{
+
+    let label="Sistema";
+
+    if(message.role==="user")
+     label="Paziente";
+
+    else if(
+     message.role==="assistant"
+    )
+     label="Assistente AI";
+
+    else if(
+     message.role==="operator"
+    )
+     label="Operatore";
+
+    return `
+     <div class="msg ${esc(message.role)}">
+      <div class="bubble">
+
+       <div class="who">
+        ${label}
+       </div>
+
+       ${esc(message.content)
+        .replace(/\n/g,"<br>")}
+
+       <div class="when">
+        ${dateTime(
+         message.created_at
+        )}
+       </div>
+
+      </div>
+     </div>
+    `;
+   })
+   .join("");
+
+
+ document.getElementById(
+  "detail"
+ ).innerHTML=`
+
+  <section class="card person">
+
+   <div class="avatar">
+    <i class="bi ${
+     call.call_type==="operator"
+      ?"bi-headset"
+      :"bi-telephone"
+    }"></i>
+   </div>
+
+   <div>
+
+    <div class="title">
+     ${esc(name)}
+    </div>
+
+    <div class="sub">
+
+     ${esc(number)}
+
+     ${
+      recognized
+       ?` · Paziente #${
+         esc(
+          call.patient_id||
+          voice?.patient_id
+         )
+        } · Riconciliato`
+       :" · numero non in anagrafica Pazienti"
+     }
+
+    </div>
+
+   </div>
+
+  </section>
+
+
+  <section class="card metrics">
+
+   <div class="metric">
+    <small>Gestione</small>
+    <strong>
+     ${esc(
+      callTypeLabel(call)
+     )}
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Stato</small>
+    <strong>
+     ${esc(
+      callStatusLabel(call)
+     )}
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Destinazione</small>
+    <strong>
+     ${esc(
+      call.callee_number||
+      "—"
+     )}
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Risposta</small>
+    <strong>
+     ${
+      call.answered_at
+       ?dateTime(call.answered_at)
+       :"Non risposta"
+     }
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Durata</small>
+    <strong>
+     ${durationLabel(
+      call.duration_seconds
+     )}
+    </strong>
+   </div>
+
+  </section>
+
+
+  <section class="card transcript">
+
+   <h2>
+    <i class="bi bi-diagram-3"></i>
+    Dettaglio telefonata
+   </h2>
+
+
+   <div class="call-metadata">
+
+    <div class="call-meta">
+     <small>Direzione</small>
+     <strong>
+      ${
+       call.direction==="outbound"
+        ?"Uscente"
+        :"Entrante"
+      }
+     </strong>
+    </div>
+
+    <div class="call-meta">
+     <small>Interno operatore</small>
+     <strong>
+      ${esc(
+       call.operator_extension||
+       "—"
+      )}
+     </strong>
+    </div>
+
+    <div class="call-meta">
+     <small>Uniqueid</small>
+     <strong>
+      ${esc(
+       call.asterisk_uniqueid||
+       "—"
+      )}
+     </strong>
+    </div>
+
+    <div class="call-meta">
+     <small>Linkedid</small>
+     <strong>
+      ${esc(
+       call.asterisk_linkedid||
+       "—"
+      )}
+     </strong>
+    </div>
+
+   </div>
+
+  </section>
+
+
+  ${
+   voice
+    ?`
+     <section class="card transcript">
+
+      <h2>
+       <i class="bi bi-chat-left-text"></i>
+       Trascrizione conversazione
+      </h2>
+
+      ${
+       messages||
+       (
+        call.call_type==="operator"
+        ?(
+          omniaVoiceIsLive(call)
+           ?`<div class="omnia-transcription-info">
+              <strong>Trascrizione disponibile al termine della chiamata.</strong><br>
+              Le chiamate provenienti da Asterisk vengono trascritte automaticamente dopo la chiusura. Il testo comparirà qui pochi secondi dopo il termine della telefonata.
+             </div>`
+           :`<div class="omnia-transcription-info">
+              <strong>Trascrizione in elaborazione.</strong><br>
+              La chiamata è conclusa. La trascrizione automatica comparirà qui non appena l'elaborazione audio sarà completata.
+             </div>`
+         )
+        :"<p>Nessun messaggio.</p>"
+       )
+      }
+
+     </section>
+    `
+    :`
+     <section class="card transcript">
+
+      <h2>
+       <i class="bi bi-headset"></i>
+       Trascrizione conversazione
+      </h2>
+
+      <p class="sub">
+       La trascrizione delle chiamate Asterisk viene elaborata automaticamente dopo la chiusura della telefonata e comparirà qui al termine dell'elaborazione.
+      </p>
+
+     </section>
+    `
+  }
+
+ `;
+}
+
+
+function renderList(){
+
+ const conversations=filtered();
+
+ const html=conversations.map(item=>{
+
+  const voice=item.voice || {};
+
+  const sentiment=
+   voice.sentiment_overall ||
+   voice.sentiment ||
+   "neutral";
+
+  const name=
+   item.patient_name ||
+   item.sender_id ||
+   "Chiamante";
+
+  const number=
+   formattedPhone(
+    item.sender_id || ""
+   );
+
+  const preview=
+   lastMessage(item);
+
+  const isRecognized=
+   Boolean(item.patient_id);
+
+  return `
+   <div
+    class="item ${
+     selected &&
+     selected.id===item.id
+      ? "active"
+      : ""
+    }"
+    onclick='selectItem(${JSON.stringify(item.id)})'
+   >
+
+    <div class="item-head">
+
+     <i class="bi bi-telephone"></i>
+
+     <div style="min-width:0;flex:1">
+
+      <div class="contact-name">
+       ${esc(name)}
+      </div>
+
+      ${
+       item.patient_name
+        ? `
+          <div class="contact-phone">
+           ${esc(number)}
+          </div>
+         `
+        : ""
+      }
+
+     </div>
+
+     <span class="time">
+      ${dateTime(item.updated_at)}
+     </span>
+
+    </div>
+
+    ${
+     isRecognized
+      ? `
+       <div class="recognized">
+        <i class="bi bi-check-circle-fill"></i>
+        Paziente riconciliato
+       </div>
+      `
+      : `
+       <div
+        class="recognized"
+        style="color:#b54708"
+       >
+        <i class="bi bi-exclamation-circle"></i>
+        numero non in anagrafica Pazienti
+       </div>
+      `
+    }
+
+    ${
+     preview
+      ? `
+        <div class="preview">
+         “${esc(preview)}”
+        </div>
+       `
+      : ""
+    }
+
+    <div class="badges">
+
+     ${badge(sentiment)}
+
+     ${
+      voice.sentiment_trend &&
+      voice.sentiment_trend!=="stable"
+       ? badge(
+          voice.sentiment_trend
+         )
+       : ""
+     }
+
+     ${
+      voice.intent
+       ? badge(voice.intent)
+       : ""
+     }
+
+     ${
+      voice.handoff
+       ? badge(
+          "handoff",
+          "handoff"
+         )
+       : ""
+     }
+
+     <span class="badge">
+      ${item.message_count || 0} msg
+     </span>
+
+    </div>
+
+   </div>
+  `;
+
+ }).join("");
+
+ document.getElementById(
+  "list"
+ ).innerHTML=
+  html ||
+  `<div class="empty">
+   Nessuna conversazione.
+  </div>`;
+}
+
+
+function selectItem(id){
+ selected=items.find(
+  item=>item.id===id
+ );
+
+ renderList();
+ show(selected);
+}
+
+function show(item){
+
+ const voice=item.voice || {};
+
+ const sentiment=
+  voice.sentiment_overall ||
+  voice.sentiment ||
+  "neutral";
+
+ const messages=(item.messages || [])
+  .map(message=>{
+
+   let label="Sistema";
+
+   if(message.role==="user")
+    label="Paziente";
+
+   else if(message.role==="assistant")
+    label="Assistente AI";
+
+   else if(message.role==="operator")
+    label="Operatore";
+
+   return `
+    <div class="msg ${esc(message.role)}">
+     <div class="bubble">
+      <div class="who">${label}</div>
+
+      ${esc(message.content)
+       .replace(/\n/g,"<br>")}
+
+      <div class="when">
+       ${dateTime(message.created_at)}
+      </div>
+     </div>
+    </div>
+   `;
+  })
+  .join("");
+
+ document.getElementById("detail").innerHTML=`
+
+  <section class="card person">
+
+   <div class="avatar">
+    <i class="bi bi-person"></i>
+   </div>
+
+   <div>
+    <div class="title">
+     ${esc(
+      item.patient_name ||
+      item.sender_id ||
+      "Chiamante"
+     )}
+    </div>
+
+    <div class="sub">
+     ${
+      item.patient_id
+       ? `${esc(item.sender_id || "")} · Paziente #${esc(item.patient_id)} · Riconciliato`
+       : `${esc(item.sender_id || "")} · numero non in anagrafica Pazienti`
+     }
+     · ${item.message_count || 0} messaggi
+    </div>
+   </div>
+
+  </section>
+
+
+  <section class="card metrics">
+
+   <div class="metric">
+    <small>Sentiment</small>
+    <strong>${badge(sentiment)}</strong>
+   </div>
+
+   <div class="metric">
+    <small>Trend</small>
+    <strong>
+     ${esc(voice.sentiment_trend || "stable")}
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Intent</small>
+    <strong>
+     ${esc(voice.intent || "—")}
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Confidence</small>
+    <strong>
+     ${Math.round(
+      (Number(voice.confidence) || 0) * 100
+     )}%
+    </strong>
+   </div>
+
+   <div class="metric">
+    <small>Handoff</small>
+    <strong>
+     ${voice.handoff ? "Sì" : "No"}
+    </strong>
+   </div>
+
+  </section>
+
+
+  ${
+   voice.handoff
+    ? `
+      <div class="notice">
+       <b>Escalation operatore</b><br>
+       ${esc(
+        voice.handoff_reason ||
+        "Richiesta utente"
+       )}
+      </div>
+     `
+    : ""
+  }
+
+
+  <section class="card transcript">
+
+   <h2>
+    <i class="bi bi-chat-left-text"></i>
+    Trascrizione chiamata
+   </h2>
+
+   ${messages || "<p>Nessun messaggio.</p>"}
+
+  </section>
+ `;
+}
+
+loadData().catch(error=>{
+ document.getElementById("detail").innerHTML=
+  `<div class="notice">
+   <b>Errore:</b> ${esc(error.message)}
+  </div>`;
+});
+
+setInterval(
+ ()=>loadData().catch(()=>{}),
+ 10000
+);
+
+
+/* OMNIA_VOICE_REALTIME_V1 */
+
+let omniaVoiceWs = null;
+let omniaVoiceRefreshTimer = null;
+
+
+/*
+ * Refresh rapido del solo registro telefonico.
+ * Non ricarica continuamente tutte le trascrizioni AI.
+ */
+async function refreshVoiceRegistry(){
+
+  try{
+
+    let jwt = voiceToken();
+
+    let response =
+      await fetchCallRegistry(jwt);
+
+    if(
+      response.status === 401 ||
+      response.status === 403
+    ){
+
+      jwt =
+        await silentOperatorLogin();
+
+      if(jwt)
+        response =
+          await fetchCallRegistry(jwt);
+    }
+
+
+    if(!response.ok)
+      return;
+
+
+    const payload =
+      await response.json();
+
+    calls =
+      payload.items || [];
+
+
+    renderUnifiedList();
+
+
+    if(selectedUnified){
+
+      const current =
+        unifiedEntries().find(
+          item =>
+            item.key === selectedUnified
+        );
+
+      if(current)
+        showUnified(current);
+    }
+
+  }
+  catch(error){
+
+    console.warn(
+      "Omnia Voice registry refresh:",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+ * Aggiornamento realtime tramite websocket calls.
+ */
+function connectOmniaVoiceRealtime(){
+
+  if(
+    omniaVoiceWs &&
+    (
+      omniaVoiceWs.readyState === WebSocket.OPEN ||
+      omniaVoiceWs.readyState === WebSocket.CONNECTING
+    )
+  ){
+    return;
+  }
+
+
+  const protocol =
+    location.protocol === "https:"
+      ? "wss:"
+      : "ws:";
+
+
+  const url =
+    `${protocol}//${location.host}/api/calls/ws`;
+
+
+  omniaVoiceWs =
+    new WebSocket(url);
+
+
+  omniaVoiceWs.addEventListener(
+    "open",
+    ()=>{
+
+      console.info(
+        "Omnia Voice realtime connesso"
+      );
+
+      /*
+       * Il backend aspetta messaggi dal client
+       * per mantenere il websocket attivo.
+       */
+      if(omniaVoiceRefreshTimer)
+        clearInterval(
+          omniaVoiceRefreshTimer
+        );
+
+      omniaVoiceRefreshTimer =
+        setInterval(
+          ()=>{
+
+            if(
+              omniaVoiceWs &&
+              omniaVoiceWs.readyState === WebSocket.OPEN
+            ){
+              omniaVoiceWs.send(
+                "ping"
+              );
+            }
+
+          },
+          15000
+        );
+
+    }
+  );
+
+
+  omniaVoiceWs.addEventListener(
+    "message",
+    async event=>{
+
+      try{
+
+        const message =
+          JSON.parse(event.data);
+
+        console.debug(
+          "Omnia Voice realtime",
+          message
+        );
+
+
+        if(
+          [
+            "call_created",
+            "call_updated",
+            "call_active",
+            "call_ended",
+            "call_status"
+          ].includes(
+            message.type
+          )
+        ){
+          await refreshVoiceRegistry();
+        }
+
+      }
+      catch(error){
+
+        console.warn(
+          "Evento realtime non valido",
+          error
+        );
+
+      }
+
+    }
+  );
+
+
+  omniaVoiceWs.addEventListener(
+    "close",
+    ()=>{
+
+      console.warn(
+        "Omnia Voice realtime disconnesso"
+      );
+
+      if(omniaVoiceRefreshTimer){
+        clearInterval(
+          omniaVoiceRefreshTimer
+        );
+
+        omniaVoiceRefreshTimer=null;
+      }
+
+
+      /*
+       * Riconnessione automatica.
+       */
+      setTimeout(
+        connectOmniaVoiceRealtime,
+        2000
+      );
+
+    }
+  );
+
+
+  omniaVoiceWs.addEventListener(
+    "error",
+    ()=>{
+
+      try{
+        omniaVoiceWs.close();
+      }catch(error){}
+
+    }
+  );
+
+}
+
+
+/*
+ * Fallback polling.
+ * Anche con websocket non dipendiamo
+ * esclusivamente dagli eventi push.
+ */
+setInterval(
+  ()=>refreshVoiceRegistry(),
+  2000
+);
+
+
+connectOmniaVoiceRealtime();
+
+
+
+/* ==========================================================
+   OMNIA_VOICE_LIVE_V2
+   Stato realtime delle telefonate Asterisk
+   ========================================================== */
+
+const OMNIA_VOICE_LIVE_STATUSES =
+  new Set([
+    "ringing",
+    "active",
+    "held"
+  ]);
+
+
+function omniaVoiceIsLive(call){
+
+  return Boolean(
+    call &&
+    OMNIA_VOICE_LIVE_STATUSES.has(
+      String(call.status || "")
+        .toLowerCase()
+    )
+  );
+}
+
+
+function omniaVoiceLiveLabel(call){
+
+  if(!call)
+    return "";
+
+  const status =
+    String(call.status || "")
+      .toLowerCase();
+
+  if(status === "ringing")
+    return "● LIVE · IN ARRIVO";
+
+  if(status === "held")
+    return "● LIVE · IN ATTESA";
+
+  if(status === "active")
+    return "● LIVE";
+
+  if(status === "missed")
+    return "○ PERSA";
+
+  return "○ CONCLUSA";
+}
+
+
+function omniaVoiceLiveClass(call){
+
+  if(!call)
+    return "omnia-voice-closed";
+
+  const status =
+    String(call.status || "")
+      .toLowerCase();
+
+  if(status === "ringing")
+    return "omnia-voice-ringing";
+
+  if(status === "held")
+    return "omnia-voice-held";
+
+  if(status === "active")
+    return "omnia-voice-live";
+
+  if(status === "missed")
+    return "omnia-voice-missed";
+
+  return "omnia-voice-closed";
+}
+
+
+/*
+ * Le chiamate LIVE devono essere sempre
+ * visualizzate prima dello storico.
+ */
+function omniaVoiceSortEntries(entries){
+
+  return [...entries].sort((a,b)=>{
+
+    const aLive =
+      omniaVoiceIsLive(a.call);
+
+    const bLive =
+      omniaVoiceIsLive(b.call);
+
+    if(aLive !== bLive)
+      return aLive ? -1 : 1;
+
+
+    const ad =
+      new Date(
+        a.call?.started_at ||
+        a.voice?.updated_at ||
+        a.voice?.created_at ||
+        0
+      ).getTime();
+
+    const bd =
+      new Date(
+        b.call?.started_at ||
+        b.voice?.updated_at ||
+        b.voice?.created_at ||
+        0
+      ).getTime();
+
+    return bd - ad;
+  });
+}
+
+
+/*
+ * Decorazione della lista dopo il rendering
+ * esistente.
+ */
+function omniaDecorateVoiceList(){
+
+  if(typeof unifiedEntries !== "function")
+    return;
+
+  const entries =
+    unifiedEntries();
+
+  const map =
+    new Map(
+      entries.map(
+        entry => [
+          String(entry.key),
+          entry
+        ]
+      )
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-unified-key]"
+    )
+    .forEach(el=>{
+
+      const key =
+        String(
+          el.dataset.unifiedKey || ""
+        );
+
+      const entry =
+        map.get(key);
+
+      if(!entry?.call)
+        return;
+
+
+      const call =
+        entry.call;
+
+      const live =
+        omniaVoiceIsLive(call);
+
+
+      el.classList.toggle(
+        "omnia-call-live-item",
+        live
+      );
+
+      el.classList.toggle(
+        "omnia-call-closed-item",
+        !live
+      );
+
+
+      let badge =
+        el.querySelector(
+          ".omnia-live-state"
+        );
+
+      if(!badge){
+
+        badge =
+          document.createElement(
+            "span"
+          );
+
+        badge.className =
+          "omnia-live-state";
+
+        /*
+         * Mettiamo il badge nella zona badges,
+         * se presente.
+         */
+        const badges =
+          el.querySelector(
+            ".badges"
+          );
+
+        if(badges)
+          badges.prepend(badge);
+        else
+          el.prepend(badge);
+      }
+
+
+      badge.className =
+        "omnia-live-state " +
+        omniaVoiceLiveClass(call);
+
+      badge.textContent =
+        omniaVoiceLiveLabel(call);
+    });
+}
+
+
+/*
+ * Aggiornamento del dettaglio selezionato.
+ * Non lasciamo pulsanti realtime disponibili
+ * dopo l'hangup.
+ */
+function omniaDecorateVoiceDetail(entry){
+
+  const detail =
+    document.getElementById(
+      "detail"
+    );
+
+  if(
+    !detail ||
+    !entry?.call
+  )
+    return;
+
+
+  const call =
+    entry.call;
+
+  const live =
+    omniaVoiceIsLive(call);
+
+
+  let banner =
+    detail.querySelector(
+      ".omnia-call-live-banner"
+    );
+
+
+  if(!banner){
+
+    banner =
+      document.createElement(
+        "div"
+      );
+
+    banner.className =
+      "omnia-call-live-banner";
+
+    detail.prepend(banner);
+  }
+
+
+  banner.className =
+    "omnia-call-live-banner " +
+    omniaVoiceLiveClass(call);
+
+
+  const owner =
+    call.call_type === "operator"
+      ? (
+          call.operator_extension
+            ? `Operatore ${call.operator_extension}`
+            : "Operatore"
+        )
+      : "AI";
+
+
+  banner.innerHTML = `
+    <div class="omnia-live-main">
+      <strong>
+        ${omniaVoiceLiveLabel(call)}
+      </strong>
+
+      <span>
+        ${owner}
+      </span>
+    </div>
+
+    ${
+      live
+        ? `
+          <div class="omnia-live-pulse">
+            Conversazione telefonica in corso
+          </div>
+        `
+        : `
+          <div class="omnia-live-ended">
+            Telefonata terminata
+          </div>
+        `
+    }
+  `;
+
+
+  /*
+   * Qualsiasi comando realtime eventualmente
+   * già presente nel dettaglio viene disabilitato
+   * quando la telefonata non è più LIVE.
+   *
+   * Supportiamo diversi nomi/classi così la regola
+   * resta valida anche se la UI viene evoluta.
+   */
+  const realtimeControls =
+    detail.querySelectorAll(`
+      [data-live-action],
+      .btn-take-call,
+      .btn-return-ai,
+      .btn-call-operator,
+      .btn-take-operator,
+      #btn-take-call,
+      #btn-return-ai,
+      #btn-call-operator
+    `);
+
+
+  realtimeControls.forEach(button=>{
+
+    button.classList.toggle(
+      "d-none",
+      !live
+    );
+
+    if("disabled" in button)
+      button.disabled = !live;
+  });
+}
+
+
+/*
+ * Wrapper non invasivo del rendering esistente.
+ */
+if(
+  typeof renderUnifiedList === "function"
+){
+
+  const omniaOriginalRenderUnifiedList =
+    renderUnifiedList;
+
+  renderUnifiedList =
+    function(){
+
+      /*
+       * Ordiniamo direttamente l'array calls:
+       * active/ringing/held prima dello storico.
+       */
+      if(Array.isArray(calls)){
+
+        calls.sort((a,b)=>{
+
+          const al =
+            omniaVoiceIsLive(a);
+
+          const bl =
+            omniaVoiceIsLive(b);
+
+          if(al !== bl)
+            return al ? -1 : 1;
+
+          return (
+            new Date(
+              b.started_at || 0
+            ) -
+            new Date(
+              a.started_at || 0
+            )
+          );
+        });
+      }
+
+
+      const result =
+        omniaOriginalRenderUnifiedList
+          .apply(this,arguments);
+
+      omniaDecorateVoiceList();
+
+      return result;
+    };
+}
+
+
+/*
+ * Wrapper del dettaglio.
+ */
+if(
+  typeof showUnified === "function"
+){
+
+  const omniaOriginalShowUnified =
+    showUnified;
+
+  showUnified =
+    function(entry){
+
+      const result =
+        omniaOriginalShowUnified
+          .apply(this,arguments);
+
+      omniaDecorateVoiceDetail(
+        entry
+      );
+
+      return result;
+    };
+}
+
+
+/*
+ * Refresh leggero del solo registro Asterisk.
+ *
+ * Non ricarichiamo continuamente tutte le
+ * trascrizioni Voice AI.
+ */
+let omniaVoiceLiveRefreshBusy =
+  false;
+
+
+async function omniaVoiceLiveRefresh(){
+
+  if(omniaVoiceLiveRefreshBusy)
+    return;
+
+  if(
+    typeof fetchCallRegistry !==
+    "function"
+  )
+    return;
+
+
+  omniaVoiceLiveRefreshBusy =
+    true;
+
+
+  try{
+
+    let jwt =
+      typeof voiceToken === "function"
+        ? voiceToken()
+        : null;
+
+
+    let response =
+      await fetchCallRegistry(jwt);
+
+
+    if(
+      response.status === 401 ||
+      response.status === 403
+    ){
+
+      if(
+        typeof silentOperatorLogin ===
+        "function"
+      ){
+
+        jwt =
+          await silentOperatorLogin();
+
+        if(jwt)
+          response =
+            await fetchCallRegistry(jwt);
+      }
+    }
+
+
+    if(!response.ok){
+
+      console.warn(
+        "[OMNIA LIVE] registry HTTP",
+        response.status
+      );
+
+      return;
+    }
+
+
+    const payload =
+      await response.json();
+
+
+    const previous =
+      new Map(
+        (calls || []).map(
+          call => [
+            String(call.id),
+            String(call.status || "")
+          ]
+        )
+      );
+
+
+    calls =
+      payload.items || [];
+
+
+    let changed =
+      previous.size !==
+      calls.length;
+
+
+    if(!changed){
+
+      for(const call of calls){
+
+        if(
+          previous.get(
+            String(call.id)
+          ) !==
+          String(call.status || "")
+        ){
+          changed = true;
+          break;
+        }
+      }
+    }
+
+
+    /*
+     * Anche se non è cambiato lo status,
+     * aggiorniamo durata/metadati della
+     * chiamata selezionata.
+     */
+    if(
+      changed ||
+      selectedUnified
+    ){
+
+      if(
+        typeof renderUnifiedList ===
+        "function"
+      ){
+        renderUnifiedList();
+      }
+
+
+      if(
+        selectedUnified &&
+        typeof unifiedEntries ===
+        "function" &&
+        typeof showUnified ===
+        "function"
+      ){
+
+        const current =
+          unifiedEntries().find(
+            item =>
+              String(item.key) ===
+              String(selectedUnified)
+          );
+
+
+        if(current)
+          showUnified(current);
+      }
+    }
+
+
+  }catch(error){
+
+    console.warn(
+      "[OMNIA LIVE] refresh error",
+      error
+    );
+
+  }finally{
+
+    omniaVoiceLiveRefreshBusy =
+      false;
+  }
+}
+
+
+/*
+ * Polling realtime di sicurezza.
+ * 1 secondo è adeguato per una console operatore.
+ */
+window.setInterval(
+  omniaVoiceLiveRefresh,
+  1000
+);
+
+
+/*
+ * Primo aggiornamento immediato.
+ */
+window.setTimeout(
+  omniaVoiceLiveRefresh,
+  300
+);
+
+
+console.info(
+  "[OMNIA LIVE] Voice LIVE V2 attivo"
+);
+
+
+</script>
+
+
+<script>
+/*
+ * OMNIA_VOICE_CALL_GROUPS_V1
+ *
+ * Il numero telefonico e' una chiave di raggruppamento UI.
+ * Ogni call.id resta una conversazione indipendente.
+ *
+ * Nessun transcript viene unificato.
+ */
+
+function omniaCallPhoneKey(call){
+  if(!call)
+    return "";
+
+  const raw =
+    call.caller_number ||
+    call.sender_id ||
+    call.phone_number ||
+    "";
+
+  const digits =
+    String(raw).replace(/\D/g,"");
+
+  return digits || String(raw);
+}
+
+
+function omniaCallDisplayPhone(call){
+  if(!call)
+    return "Numero sconosciuto";
+
+  return (
+    call.caller_number ||
+    call.sender_id ||
+    call.phone_number ||
+    "Numero sconosciuto"
+  );
+}
+
+
+function omniaGroupCallsByPhone(entries){
+
+  const groups = new Map();
+
+  (entries || []).forEach(entry=>{
+
+    const call = entry.call;
+
+    /*
+     * Le ChatSession legacy senza Call
+     * rimangono elementi autonomi.
+     */
+    if(!call){
+
+      groups.set(
+        `legacy:${entry.key}`,
+        {
+          key:`legacy:${entry.key}`,
+          phone:"",
+          entries:[entry],
+          legacy:true
+        }
+      );
+
+      return;
+    }
+
+    const phoneKey =
+      omniaCallPhoneKey(call) ||
+      `call-${call.id}`;
+
+    if(!groups.has(phoneKey)){
+
+      groups.set(
+        phoneKey,
+        {
+          key:phoneKey,
+          phone:
+            omniaCallDisplayPhone(call),
+          entries:[],
+          legacy:false
+        }
+      );
+    }
+
+    groups.get(phoneKey)
+      .entries
+      .push(entry);
+  });
+
+
+  const result =
+    Array.from(groups.values());
+
+  result.forEach(group=>{
+
+    group.entries.sort((a,b)=>{
+
+      const ad =
+        omniaVoiceDate(
+          a.call?.started_at ||
+          a.voice?.created_at
+        )?.getTime() || 0;
+
+      const bd =
+        omniaVoiceDate(
+          b.call?.started_at ||
+          b.voice?.created_at
+        )?.getTime() || 0;
+
+      return bd-ad;
+    });
+  });
+
+
+  result.sort((a,b)=>{
+
+    const aLive =
+      a.entries.some(
+        e=>omniaVoiceIsLive?.(e.call)
+      );
+
+    const bLive =
+      b.entries.some(
+        e=>omniaVoiceIsLive?.(e.call)
+      );
+
+    if(aLive !== bLive)
+      return aLive ? -1 : 1;
+
+    const ad =
+      omniaVoiceDate(
+        a.entries[0]?.call?.started_at ||
+        a.entries[0]?.voice?.created_at
+      )?.getTime() || 0;
+
+    const bd =
+      omniaVoiceDate(
+        b.entries[0]?.call?.started_at ||
+        b.entries[0]?.voice?.created_at
+      )?.getTime() || 0;
+
+    return bd-ad;
+  });
+
+  return result;
+}
+
+
+function omniaCallGroupDate(call){
+
+  if(!call?.started_at)
+    return "Data non disponibile";
+
+  try{
+    return new Intl.DateTimeFormat(
+      "it-IT",
+      {
+        timeZone:"Europe/Rome",
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    ).format(
+      omniaVoiceDate(call.started_at)
+    );
+  }
+  catch(_){
+    return call.started_at;
+  }
+}
+
+
+function omniaInstallCallGroups(){
+
+  const list =
+    document.getElementById("list");
+
+  if(!list)
+    return;
+
+  /*
+   * Non sostituiamo il renderer.
+   *
+   * Decoriamo le righe gia' create:
+   * ogni riga continua quindi ad avere
+   * il proprio handler showUnified(entry).
+   */
+  const entries =
+    typeof unifiedEntries === "function"
+      ? unifiedEntries()
+      : [];
+
+  if(!entries.length)
+    return;
+
+
+  const children =
+    Array.from(list.children);
+
+  if(
+    !children.length ||
+    children.length !== entries.length
+  ){
+    return;
+  }
+
+
+  const groups =
+    omniaGroupCallsByPhone(entries);
+
+  /*
+   * Un solo numero/chiamata non necessita
+   * di una struttura speciale, ma manteniamo
+   * comunque data/ora della telefonata.
+   */
+  const wrapper =
+    document.createElement("div");
+
+  wrapper.className =
+    "omnia-phone-groups";
+
+
+  let childIndex = 0;
+
+  groups.forEach(group=>{
+
+    if(group.legacy){
+
+      const row =
+        children[childIndex++];
+
+      if(row)
+        wrapper.appendChild(row);
+
+      return;
+    }
+
+
+    const section =
+      document.createElement("section");
+
+    section.className =
+      "omnia-phone-group";
+
+
+    const latest =
+      group.entries[0]?.call;
+
+    const live =
+      group.entries.some(
+        entry=>
+          typeof omniaVoiceIsLive === "function" &&
+          omniaVoiceIsLive(entry.call)
+      );
+
+
+    const header =
+      document.createElement("div");
+
+    header.className =
+      "omnia-phone-group-header";
+
+    header.innerHTML = `
+      <div class="omnia-phone-group-main">
+
+        <div class="omnia-phone-group-number">
+          ${group.phone}
+        </div>
+
+        <div class="omnia-phone-group-meta">
+          ${group.entries.length}
+          ${group.entries.length===1
+            ? "chiamata"
+            : "chiamate"}
+
+          · ultima
+          ${omniaCallGroupDate(latest)}
+        </div>
+
+      </div>
+
+      ${
+        live
+          ? `<span class="omnia-phone-live">
+               LIVE
+             </span>`
+          : ""
+      }
+    `;
+
+
+    section.appendChild(header);
+
+
+    const callsBox =
+      document.createElement("div");
+
+    callsBox.className =
+      "omnia-phone-call-list";
+
+
+    group.entries.forEach(entry=>{
+
+      /*
+       * Il renderer originale genera le righe
+       * nello stesso ordine di unifiedEntries().
+       *
+       * Cerchiamo prima la riga corrispondente
+       * tramite indice, senza clonarla:
+       * gli event listener originali restano vivi.
+       */
+
+      const originalIndex =
+        entries.findIndex(
+          candidate=>
+            String(candidate.key) ===
+            String(entry.key)
+        );
+
+      const row =
+        children[originalIndex];
+
+      if(!row)
+        return;
+
+
+      row.classList.add(
+        "omnia-phone-call-row"
+      );
+
+      row.dataset.callId =
+        String(entry.call?.id || "");
+
+      row.dataset.callKey =
+        String(entry.key || "");
+
+
+      const callMeta =
+        document.createElement("div");
+
+      callMeta.className =
+        "omnia-phone-call-meta";
+
+      const call =
+        entry.call;
+
+      const type =
+        typeof callTypeLabel === "function"
+          ? callTypeLabel(call)
+          : "Telefonata";
+
+      const status =
+        typeof callStatusLabel === "function"
+          ? callStatusLabel(call)
+          : "";
+
+      const duration =
+        typeof durationLabel === "function"
+          ? durationLabel(call?.duration_seconds)
+          : "";
+
+
+      callMeta.innerHTML = `
+        <span class="omnia-phone-call-date">
+          ${omniaCallGroupDate(call)}
+        </span>
+
+        <span class="omnia-phone-call-separator">
+          ·
+        </span>
+
+        <span>
+          ${type}
+        </span>
+
+        ${
+          status
+            ? `
+              <span class="omnia-phone-call-separator">
+                ·
+              </span>
+              <span>${status}</span>
+            `
+            : ""
+        }
+
+        ${
+          duration && duration!=="—"
+            ? `
+              <span class="omnia-phone-call-separator">
+                ·
+              </span>
+              <span>${duration}</span>
+            `
+            : ""
+        }
+      `;
+
+      row.prepend(callMeta);
+
+      callsBox.appendChild(row);
+    });
+
+
+    section.appendChild(callsBox);
+    wrapper.appendChild(section);
+  });
+
+
+  list.replaceChildren(wrapper);
+}
+
+
+/*
+ * Decorazione post-render.
+ *
+ * Il renderer originale continua a gestire:
+ * - filtri
+ * - click
+ * - selezione
+ * - transcript
+ * - refresh LIVE
+ */
+if(
+  typeof renderUnifiedList === "function"
+){
+
+  const omniaCallGroupsOriginalRender =
+    renderUnifiedList;
+
+  renderUnifiedList =
+    function(){
+
+      const result =
+        omniaCallGroupsOriginalRender
+          .apply(this,arguments);
+
+      window.requestAnimationFrame(
+        omniaInstallCallGroups
+      );
+
+      return result;
+    };
+}
+
+
+/*
+ * Applica anche alla pagina gia caricata.
+ */
+window.setTimeout(
+  omniaInstallCallGroups,
+  100
+);
+
+console.info(
+  "[OMNIA VOICE] Call Groups V1 attivo"
+);
+</script>
+
+<style>
+/* OMNIA_VOICE_CALL_GROUPS_V1_STYLE */
+
+.omnia-phone-groups{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.omnia-phone-group{
+  border:1px solid rgba(148,163,184,.22);
+  border-radius:12px;
+  overflow:hidden;
+  background:rgba(255,255,255,.015);
+}
+
+.omnia-phone-group-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 13px;
+  border-bottom:1px solid rgba(148,163,184,.16);
+}
+
+.omnia-phone-group-number{
+  font-weight:650;
+  font-size:.94rem;
+  line-height:1.2;
+}
+
+.omnia-phone-group-meta{
+  margin-top:3px;
+  font-size:.73rem;
+  opacity:.62;
+}
+
+.omnia-phone-live{
+  font-size:.66rem;
+  font-weight:700;
+  letter-spacing:.06em;
+  padding:3px 7px;
+  border-radius:999px;
+  border:1px solid currentColor;
+}
+
+.omnia-phone-call-list{
+  display:flex;
+  flex-direction:column;
+}
+
+.omnia-phone-call-row{
+  position:relative;
+  border-radius:0 !important;
+  border-left:0 !important;
+  border-right:0 !important;
+}
+
+.omnia-phone-call-row + .omnia-phone-call-row{
+  border-top:1px solid rgba(148,163,184,.12);
+}
+
+.omnia-phone-call-meta{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-bottom:5px;
+  font-size:.69rem;
+  opacity:.67;
+}
+
+.omnia-phone-call-date{
+  font-weight:600;
+  opacity:1;
+}
+
+.omnia-phone-call-separator{
+  opacity:.45;
+}
+</style>
+
+
+<style id="omnia-doc-exchange-style">
+
+.omnia-doc-exchange {
+  margin-top:18px;
+  padding:16px;
+  border:1px solid #dbe4f0;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 4px 18px rgba(15,23,42,.05);
+}
+
+.omnia-doc-exchange h3 {
+  margin:0 0 4px;
+  font-size:16px;
+}
+
+.omnia-doc-subtitle {
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:13px;
+}
+
+.omnia-doc-controls {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.omnia-doc-select {
+  min-width:170px;
+  padding:8px 10px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  background:#fff;
+}
+
+.omnia-doc-channel {
+  border:1px solid #cbd5e1;
+  background:#fff;
+  border-radius:9px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.omnia-doc-channel:hover {
+  background:#f8fafc;
+}
+
+.omnia-doc-channel:disabled {
+  opacity:.55;
+  cursor:wait;
+}
+
+.omnia-doc-channel.sms {
+  border-color:#0284c7;
+}
+
+.omnia-doc-channel.whatsapp {
+  border-color:#16a34a;
+}
+
+.omnia-doc-channel.telegram {
+  border-color:#0ea5e9;
+}
+
+.omnia-doc-result {
+  margin-top:10px;
+  font-size:12px;
+}
+
+.omnia-doc-result.ok {
+  color:#15803d;
+}
+
+.omnia-doc-result.error {
+  color:#b91c1c;
+}
+
+.omnia-doc-files {
+  margin-top:14px;
+  display:grid;
+  gap:7px;
+}
+
+.omnia-doc-file {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  padding:9px 11px;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  background:#f8fafc;
+}
+
+.omnia-doc-file-main {
+  min-width:0;
+}
+
+.omnia-doc-file-name {
+  font-weight:600;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.omnia-doc-file-meta {
+  color:#64748b;
+  font-size:11px;
+}
+
+.omnia-doc-download {
+  flex:0 0 auto;
+  border:1px solid #94a3b8;
+  background:#fff;
+  border-radius:8px;
+  padding:6px 9px;
+  cursor:pointer;
+}
+
+.omnia-doc-empty {
+  color:#64748b;
+  font-size:12px;
+  padding:5px 0;
+}
+
+.omnia-doc-badge {
+  display:inline-block;
+  padding:2px 7px;
+  border-radius:999px;
+  background:#ecfdf5;
+  color:#166534;
+  font-size:11px;
+  font-weight:700;
+  margin-left:6px;
+}
+
+</style>
+
+<script>
+/* OMNIA_LIVE_DOC_EXCHANGE_UI_V1 */
+
+const omniaDocState = {};
+const omniaDocChannelCache = {};
+
+
+function omniaDocAuthHeaders(json=false){
+
+  const headers={};
+
+  const jwt =
+    typeof voiceToken === "function"
+      ? voiceToken()
+      : "";
+
+  if(jwt)
+    headers.Authorization =
+      `Bearer ${jwt}`;
+
+  if(json)
+    headers["Content-Type"] =
+      "application/json";
+
+  return headers;
+}
+
+
+function omniaDocEsc(value){
+
+  if(typeof esc === "function")
+    return esc(value);
+
+  return String(value ?? "")
+    .replace(/[&<>"']/g,char=>({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    })[char]);
+}
+
+
+function omniaDocBytes(value){
+
+  const n=Number(value||0);
+
+  if(!n)
+    return "";
+
+  if(n < 1024)
+    return `${n} B`;
+
+  if(n < 1024*1024)
+    return `${(n/1024).toFixed(1)} KB`;
+
+  return `${(n/1024/1024).toFixed(1)} MB`;
+}
+
+
+async function omniaDocFetchChannels(
+  callId,
+  force=false
+){
+
+  const cached =
+    omniaDocChannelCache[callId];
+
+  if(
+    !force &&
+    cached &&
+    Date.now()-cached.at < 15000
+  )
+    return cached.data;
+
+  const response=await fetch(
+    `/api/omnichannel/calls/${encodeURIComponent(callId)}/document-channels`,
+    {
+      headers:omniaDocAuthHeaders()
+    }
+  );
+
+  const data =
+    await response.json()
+      .catch(()=>({}));
+
+  if(!response.ok)
+    throw new Error(
+      data.detail ||
+      `Errore HTTP ${response.status}`
+    );
+
+  omniaDocChannelCache[callId]={
+    at:Date.now(),
+    data
+  };
+
+  return data;
+}
+
+
+function omniaDocCurrentEntry(){
+
+  if(
+    typeof selectedUnified ===
+      "undefined" ||
+    !selectedUnified ||
+    typeof unifiedEntries !==
+      "function"
+  )
+    return null;
+
+  return unifiedEntries().find(
+    x =>
+      String(x.key) ===
+      String(selectedUnified)
+  ) || null;
+}
+
+
+async function omniaDocMount(entry){
+
+  const detail =
+    document.getElementById("detail");
+
+  if(
+    !detail ||
+    !entry ||
+    !entry.call
+  )
+    return;
+
+  const call=entry.call;
+
+  if(
+    !["ringing","active","held"]
+      .includes(call.status)
+  )
+    return;
+
+  const callId=call.id;
+
+  let channelsData;
+
+  try{
+    channelsData =
+      await omniaDocFetchChannels(
+        callId
+      );
+  }
+  catch(error){
+    console.warn(
+      "[OMNIA DOC] channels",
+      error
+    );
+    return;
+  }
+
+  if(
+    !Array.isArray(
+      channelsData.channels
+    ) ||
+    !channelsData.channels.length
+  )
+    return;
+
+  const old =
+    detail.querySelector(
+      ".omnia-doc-exchange"
+    );
+
+  if(old)
+    old.remove();
+
+  const state =
+    omniaDocState[callId] || {};
+
+  const panel =
+    document.createElement("section");
+
+  panel.className =
+    "omnia-doc-exchange";
+
+  panel.dataset.callId =
+    String(callId);
+
+  const buttons =
+    channelsData.channels
+      .map(channel=>{
+        let icon="";
+
+        if(channel.id==="sms")
+          icon="✉";
+
+        if(channel.id==="whatsapp")
+          icon="◉";
+
+        if(channel.id==="telegram")
+          icon="➤";
+
+        return `
+          <button
+            type="button"
+            class="omnia-doc-channel ${omniaDocEsc(channel.id)}"
+            data-omnia-doc-channel="${omniaDocEsc(channel.id)}"
+            onclick="omniaDocSend(${Number(callId)},'${omniaDocEsc(channel.id)}',this)"
+          >
+            ${icon}
+            ${omniaDocEsc(channel.label)}
+          </button>
+        `;
+      })
+      .join("");
+
+  const resultClass =
+    state.error
+      ? "error"
+      : state.result
+        ? "ok"
+        : "";
+
+  const patientLabel =
+    channelsData.patient_name
+      ? ` · ${omniaDocEsc(channelsData.patient_name)}`
+      : "";
+
+  panel.innerHTML=`
+    <div>
+      <h3>
+        Richiedi documenti
+        ${
+          state.attachments?.length
+            ? `<span class="omnia-doc-badge">${state.attachments.length} ricevuti</span>`
+            : ""
+        }
+      </h3>
+
+      <div class="omnia-doc-subtitle">
+        Il paziente continua a parlare al telefono e apre il link dal proprio smartphone${patientLabel}.
+      </div>
+    </div>
+
+    <div class="omnia-doc-controls">
+
+      <select
+        class="omnia-doc-select"
+        id="omnia-doc-type-${callId}"
+      >
+        <option value="impegnativa">Impegnativa</option>
+        <option value="prescrizione">Prescrizione</option>
+        <option value="referto">Referto</option>
+        <option value="documento" selected>Documento</option>
+        <option value="altro">Altro</option>
+      </select>
+
+      ${buttons}
+
+    </div>
+
+    <div
+      class="omnia-doc-result ${resultClass}"
+      id="omnia-doc-result-${callId}"
+    >
+      ${
+        omniaDocEsc(
+          state.error ||
+          state.result ||
+          ""
+        )
+      }
+    </div>
+
+    <div
+      class="omnia-doc-files"
+      id="omnia-doc-files-${callId}"
+    >
+      ${omniaDocFilesHtml(
+          callId,
+          state.attachments || []
+      )}
+    </div>
+  `;
+
+  detail.appendChild(panel);
+}
+
+
+function omniaDocFilesHtml(
+  callId,
+  attachments
+){
+
+  if(
+    !attachments ||
+    !attachments.length
+  ){
+    const state =
+      omniaDocState[callId] || {};
+
+    if(state.session_id)
+      return `
+        <div class="omnia-doc-empty">
+          Link inviato. In attesa del documento...
+        </div>
+      `;
+
+    return "";
+  }
+
+  const state =
+    omniaDocState[callId] || {};
+
+  return attachments
+    .map(file=>`
+      <div class="omnia-doc-file">
+
+        <div class="omnia-doc-file-main">
+          <div class="omnia-doc-file-name">
+            ${omniaDocEsc(file.filename || "Documento")}
+          </div>
+          <div class="omnia-doc-file-meta">
+            ${omniaDocEsc(omniaDocBytes(file.size_bytes))}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="omnia-doc-download"
+          onclick="omniaDocDownload(
+            '${omniaDocEsc(state.session_id || "")}',
+            ${Number(file.id)},
+            '${omniaDocEsc(file.filename || "documento")}'
+          )"
+        >
+          Apri
+        </button>
+
+      </div>
+    `)
+    .join("");
+}
+
+
+async function omniaDocSend(
+  callId,
+  channel,
+  button
+){
+
+  const type =
+    document.getElementById(
+      `omnia-doc-type-${callId}`
+    )?.value || "documento";
+
+  const resultEl =
+    document.getElementById(
+      `omnia-doc-result-${callId}`
+    );
+
+  const buttons =
+    document.querySelectorAll(
+      `.omnia-doc-exchange[data-call-id="${callId}"] .omnia-doc-channel`
+    );
+
+  buttons.forEach(
+    x=>x.disabled=true
+  );
+
+  if(resultEl){
+    resultEl.className =
+      "omnia-doc-result";
+
+    resultEl.textContent =
+      "Invio link in corso...";
+  }
+
+  try{
+
+    const response=await fetch(
+      `/api/omnichannel/calls/${encodeURIComponent(callId)}/document-link`,
+      {
+        method:"POST",
+        headers:omniaDocAuthHeaders(true),
+        body:JSON.stringify({
+          channel,
+          document_type:type
+        })
+      }
+    );
+
+    const data =
+      await response.json()
+        .catch(()=>({}));
+
+    if(!response.ok)
+      throw new Error(
+        data.detail ||
+        `Errore HTTP ${response.status}`
+      );
+
+    const mode =
+      data.delivery?.mode
+        ? ` · ${data.delivery.mode}`
+        : "";
+
+    omniaDocState[callId]={
+      ...(omniaDocState[callId] || {}),
+      session_id:data.session_id,
+      result:
+        `Link inviato via ${channel.toUpperCase()}${mode}. In attesa del documento.`,
+      error:null
+    };
+
+    if(resultEl){
+      resultEl.className =
+        "omnia-doc-result ok";
+
+      resultEl.textContent =
+        omniaDocState[callId].result;
+    }
+
+    await omniaDocPollCall(
+      callId
+    );
+
+  }
+  catch(error){
+
+    omniaDocState[callId]={
+      ...(omniaDocState[callId] || {}),
+      error:error.message,
+      result:null
+    };
+
+    if(resultEl){
+      resultEl.className =
+        "omnia-doc-result error";
+
+      resultEl.textContent =
+        error.message;
+    }
+
+  }
+  finally{
+
+    buttons.forEach(
+      x=>x.disabled=false
+    );
+  }
+}
+
+
+async function omniaDocPollCall(callId){
+
+  const state =
+    omniaDocState[callId] || {};
+
+  let url =
+    `/api/omnichannel/calls/${encodeURIComponent(callId)}/document-exchange`;
+
+  if(state.session_id)
+    url +=
+      `?session_id=${encodeURIComponent(state.session_id)}`;
+
+  try{
+
+    const response=await fetch(
+      url,
+      {
+        headers:omniaDocAuthHeaders()
+      }
+    );
+
+    if(!response.ok)
+      return;
+
+    const data=
+      await response.json();
+
+    if(data.session_id)
+      state.session_id =
+        data.session_id;
+
+    state.attachments =
+      data.attachments || [];
+
+    omniaDocState[callId] =
+      state;
+
+    const files =
+      document.getElementById(
+        `omnia-doc-files-${callId}`
+      );
+
+    if(files)
+      files.innerHTML =
+        omniaDocFilesHtml(
+          callId,
+          state.attachments
+        );
+
+    const panel =
+      document.querySelector(
+        `.omnia-doc-exchange[data-call-id="${callId}"]`
+      );
+
+    const badge =
+      panel?.querySelector(
+        ".omnia-doc-badge"
+      );
+
+    if(
+      state.attachments.length &&
+      !badge
+    ){
+      const h3 =
+        panel?.querySelector("h3");
+
+      if(h3){
+        const b =
+          document.createElement(
+            "span"
+          );
+
+        b.className =
+          "omnia-doc-badge";
+
+        b.textContent =
+          `${state.attachments.length} ricevuti`;
+
+        h3.appendChild(b);
+      }
+    }
+    else if(badge){
+      badge.textContent =
+        `${state.attachments.length} ricevuti`;
+    }
+
+  }
+  catch(error){
+    console.warn(
+      "[OMNIA DOC] poll",
+      error
+    );
+  }
+}
+
+
+async function omniaDocDownload(
+  sessionId,
+  attachmentId,
+  filename
+){
+
+  if(!sessionId)
+    return;
+
+  try{
+
+    const response=await fetch(
+      `/api/chatbot/sessions/${encodeURIComponent(sessionId)}/attachments/${encodeURIComponent(attachmentId)}`,
+      {
+        headers:omniaDocAuthHeaders()
+      }
+    );
+
+    if(!response.ok)
+      throw new Error(
+        `Download HTTP ${response.status}`
+      );
+
+    const blob =
+      await response.blob();
+
+    const objectUrl =
+      URL.createObjectURL(blob);
+
+    const a =
+      document.createElement("a");
+
+    a.href=objectUrl;
+    a.download=
+      filename || "documento";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.setTimeout(
+      ()=>URL.revokeObjectURL(objectUrl),
+      1000
+    );
+
+  }
+  catch(error){
+    window.alert(
+      "Impossibile aprire il documento: " +
+      error.message
+    );
+  }
+}
+
+
+/*
+ * Wrapper finale.
+ * Viene applicato DOPO le decorazioni realtime gia'
+ * presenti in Omnia Voice.
+ */
+if(
+  typeof showUnified === "function"
+){
+
+  const omniaDocOriginalShowUnified =
+    showUnified;
+
+  showUnified =
+    function(entry){
+
+      const result =
+        omniaDocOriginalShowUnified
+          .apply(this,arguments);
+
+      window.setTimeout(
+        ()=>omniaDocMount(entry),
+        0
+      );
+
+      return result;
+    };
+}
+
+
+/*
+ * Poll leggero degli allegati.
+ * Il registro telefonico continua a usare il proprio
+ * refresh realtime indipendente.
+ */
+window.setInterval(
+  async ()=>{
+
+    const entry =
+      omniaDocCurrentEntry();
+
+    if(
+      !entry ||
+      !entry.call ||
+      !["ringing","active","held"]
+        .includes(entry.call.status)
+    )
+      return;
+
+    const state =
+      omniaDocState[
+        entry.call.id
+      ];
+
+    if(
+      state &&
+      state.session_id
+    )
+      await omniaDocPollCall(
+        entry.call.id
+      );
+
+  },
+  2500
+);
+
+
+console.info(
+  "[OMNIA DOC] Live Document Exchange V1 attivo"
+);
+
+/* /OMNIA_LIVE_DOC_EXCHANGE_UI_V1 */
+</script>
+
+</body>
+</html>

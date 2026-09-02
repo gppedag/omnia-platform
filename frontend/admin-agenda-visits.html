@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agende e prestazioni | CUP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{background:#f4f7fb;color:#172033}
+header{height:68px;background:linear-gradient(90deg,#153d7a,#315ed4);color:#fff;display:flex;align-items:center;padding:0 24px;gap:18px}
+header a{color:#fff;text-decoration:none}
+main{max-width:1500px;margin:24px auto;padding:0 18px}
+.card{border:1px solid #e3e9f2;border-radius:16px;box-shadow:0 8px 24px rgba(20,45,80,.05)}
+.agenda-row{cursor:pointer;border-left:4px solid transparent}
+.agenda-row.active{background:#eef5ff;border-left-color:#315ed4}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+.square{width:11px;height:11px;border-radius:2px;display:inline-block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.visit{display:flex;gap:9px;align-items:flex-start;border:1px solid #e1e7ef;border-radius:11px;padding:11px;background:#fff}
+.visit.disabled{opacity:.42;background:#f8fafc}
+.note{font-size:12px;color:#667085}
+</style>
+</head>
+<body>
+<header>
+<a href="/admin-catalog.html"><i class="bi bi-arrow-left"></i> Configurazione CUP</a>
+<strong>Agende ↔ Prestazioni</strong>
+<span class="ms-auto">Amministrazione</span>
+</header>
+
+<main>
+<div id="message" class="alert d-none"></div>
+
+<div class="row g-4">
+  <div class="col-xl-4">
+    <section class="card">
+      <div class="card-header bg-white p-3">
+        <strong><i class="bi bi-calendar3"></i> Agende</strong>
+        <div class="note">Seleziona l'agenda da configurare.</div>
+      </div>
+      <div id="agenda-list" class="list-group list-group-flush"></div>
+    </section>
+  </div>
+
+  <div class="col-xl-8">
+    <section class="card">
+      <div class="card-header bg-white p-3">
+        <strong><i class="bi bi-link-45deg"></i> Tipologie di visita erogabili</strong>
+        <div id="agenda-info" class="note">Seleziona un'agenda.</div>
+      </div>
+
+      <div class="card-body">
+        <div id="no-agenda" class="text-muted">Nessuna agenda selezionata.</div>
+
+        <div id="editor" class="d-none">
+          <div class="alert alert-info py-2">
+            Sono selezionabili solo le prestazioni per cui il medico dell'agenda è abilitato.
+          </div>
+
+          <div id="visit-grid" class="grid"></div>
+
+          <div class="text-end mt-3">
+            <button id="save" class="btn btn-success">
+              <i class="bi bi-check2-circle"></i> Salva correlazione
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
+
+<script>
+let state={agendas:[],visit_types:[]};
+let selectedAgendaId=null;
+
+async function token(){
+  let t=sessionStorage.getItem("cup_admin_agenda_visit_token");
+  if(t)return t;
+
+  const r=await fetch("/api/auth/dev-login",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({role:"admin"})
+  });
+
+  if(!r.ok)throw new Error("Autenticazione admin non disponibile");
+
+  t=(await r.json()).access_token;
+  sessionStorage.setItem("cup_admin_agenda_visit_token",t);
+  return t;
+}
+
+async function api(path,opt={}){
+  const t=await token();
+
+  const r=await fetch(path,{
+    ...opt,
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${t}`,
+      ...(opt.headers||{})
+    }
+  });
+
+  if(!r.ok){
+    let msg=`HTTP ${r.status}`;
+    try{
+      const body=await r.json();
+      msg=body.detail||msg;
+    }catch(_){}
+    throw new Error(msg);
+  }
+
+  return r.json();
+}
+
+function esc(v){
+  return String(v??"").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function showMessage(text,type="success"){
+  const box=document.getElementById("message");
+  box.className=`alert alert-${type}`;
+  box.textContent=text;
+  box.classList.remove("d-none");
+}
+
+async function load(){
+  state=await api("/api/admin/agenda-visits");
+  render();
+}
+
+function render(){
+  const list=document.getElementById("agenda-list");
+
+  list.innerHTML=state.agendas.map(a=>`
+    <button
+      class="list-group-item list-group-item-action agenda-row ${selectedAgendaId===a.id?"active":""}"
+      data-id="${a.id}">
+      <div class="d-flex align-items-center gap-2">
+        <span class="dot" style="background:${esc(a.doctor_color||"#64748b")}"></span>
+        <strong>${esc(a.name)}</strong>
+      </div>
+      <div class="note ms-3">
+        ${esc(a.doctor_name||"Medico non assegnato")}
+        · ${(a.visit_type_ids||[]).length} prestazioni
+      </div>
+    </button>
+  `).join("");
+
+  list.querySelectorAll("[data-id]").forEach(btn=>{
+    btn.onclick=()=>{
+      selectedAgendaId=Number(btn.dataset.id);
+      render();
+    };
+  });
+
+  const agenda=state.agendas.find(a=>a.id===selectedAgendaId);
+
+  document.getElementById("no-agenda").classList.toggle("d-none",!!agenda);
+  document.getElementById("editor").classList.toggle("d-none",!agenda);
+
+  if(!agenda)return;
+
+  document.getElementById("agenda-info").textContent=
+    `${agenda.name} · ${agenda.doctor_name||"medico non assegnato"}`;
+
+  const selected=new Set((agenda.visit_type_ids||[]).map(Number));
+  const allowed=new Set((agenda.doctor_visit_type_ids||[]).map(Number));
+
+  document.getElementById("visit-grid").innerHTML=
+    state.visit_types.map(v=>{
+      const ok=allowed.has(Number(v.id));
+
+      return `
+        <label class="visit ${ok?"":"disabled"}">
+          <input class="form-check-input mt-1" type="checkbox"
+            value="${v.id}"
+            ${selected.has(Number(v.id))?"checked":""}
+            ${ok?"":"disabled"}>
+
+          <span class="square" style="background:${esc(v.color_hex||"#3b82f6")}"></span>
+
+          <span>
+            <strong>${esc(v.name)}</strong><br>
+            <span class="note">
+              ${v.duration_minutes||60} min
+              ${ok?"":" · medico non abilitato"}
+            </span>
+          </span>
+        </label>`;
+    }).join("");
+}
+
+document.getElementById("save").onclick=async()=>{
+  if(!selectedAgendaId)return;
+
+  const ids=[...document.querySelectorAll("#visit-grid input:checked")]
+    .map(x=>Number(x.value));
+
+  try{
+    await api(`/api/admin/agenda-visits/${selectedAgendaId}`,{
+      method:"PUT",
+      body:JSON.stringify({visit_type_ids:ids})
+    });
+
+    showMessage("Correlazione Agenda ↔ Prestazioni salvata.","success");
+    await load();
+  }catch(e){
+    showMessage(e.message,"danger");
+  }
+};
+
+load().catch(e=>showMessage(e.message,"danger"));
+</script>
+</body>
+</html>
