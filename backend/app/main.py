@@ -194,7 +194,10 @@ async def on_startup():
         db.close()
     # Avvia il listener AMI in background; se Asterisk non è raggiungibile
     # logga l'errore ma non blocca l'avvio del resto dell'applicazione.
-    asyncio.create_task(start_ami_listener())
+    if settings.AMI_LISTENER_ENABLED:
+        asyncio.create_task(start_ami_listener())
+    else:
+        logger.info("AMI listener disabled by configuration")
     asyncio.create_task(handoff_routes.timeout_worker())
     from app.services.reminder_service import reminder_worker
     asyncio.create_task(reminder_worker())

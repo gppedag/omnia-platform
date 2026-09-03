@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     AMI_PORT: int = 5038
     AMI_USER: str = "cup_ami"
     AMI_PASSWORD: str = "changeme"
+    AMI_LISTENER_ENABLED: bool = True
 
     LIVEKIT_URL: str = "ws://livekit:7880"
     LIVEKIT_API_KEY: str = "devkey"
