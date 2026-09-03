@@ -38,6 +38,7 @@ Prima di ogni modifica:
 8. test DEV
 9. controlled release
 10. deploy PROD solo se esplicitamente richiesto
+- Production deployment is allowed only when explicitly requested by the user
 
 ## Safety
 - NEVER docker compose down -v
@@ -111,6 +112,37 @@ A fine attività fornire:
 - rischi
 - release/deploy instructions
 - rollback
+
+## Production Release Authorization
+
+PROD rimane read-only per default.
+OpenCode può modificare PROD SOLO su richiesta esplicita dell'utente.
+
+Prima di ogni deploy PROD:
+- eseguire git fetch origin
+- verificare il branch corrente
+- verificare working tree pulito
+- verificare origin/main
+- creare un tag o punto di rollback prima della release
+- mostrare la release da applicare
+- preferire fast-forward da origin/main
+- evitare cherry-pick ad hoc salvo richiesta motivata
+- mai force push su main
+- mai rebase su main durante release
+- mai docker compose down -v
+- mai cancellare volumi
+- mai modificare .env PROD salvo richiesta esplicita specifica
+- mai modificare DB PROD automaticamente
+- ricreare/restartare solo i servizi necessari
+- verificare health/log dopo deploy
+- se qualcosa non è coerente, fermarsi prima di modificare PROD
+
+Documentare sempre:
+- commit/release
+- tag/rollback point
+- servizi toccati
+- test eseguiti
+- procedure di rollback
 
 ## OpenCode / ChatGPT Collaboration
 - GitHub è source of truth
