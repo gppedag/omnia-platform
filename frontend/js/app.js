@@ -842,6 +842,13 @@ document.querySelectorAll("[data-tab]").forEach((link) => {
     document.getElementById("tab-" + link.dataset.tab).classList.remove("d-none");
     link.classList.add("active");
 
+    if (link.dataset.tab === "voice-conversations") {
+      const frame = document.getElementById("voice-conversations-frame");
+      if (frame && !frame.getAttribute("src")) {
+        frame.setAttribute("src", frame.dataset.src);
+      }
+    }
+
     if (link.dataset.tab === "dashboard") loadDashboardStats();
     if (link.dataset.tab === "calendar") renderBookingModule();
     if (link.dataset.tab === "patients") loadPatients();
@@ -19144,7 +19151,7 @@ console.info(
       );
 
     if(old)
-      old.style.display = "none";
+      old.remove();
 
 
     const oldLauncher =
@@ -19153,7 +19160,7 @@ console.info(
       );
 
     if(oldLauncher)
-      oldLauncher.style.display = "none";
+      oldLauncher.remove();
   }
 
 
