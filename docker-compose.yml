@@ -28,7 +28,7 @@ services:
       cup.release: "1.0.27"
     env_file: .env
     environment:
-      APP_VERSION: ${APP_VERSION:-1.1.0}
+      APP_VERSION: ${APP_VERSION:-1.1.1}
       DEV_ROLE_LOGIN_ENABLED: "true"
       DEMO_LOGIN_USERS_ENABLED: "false"
       DEV_LOGIN_SERVICE_SECRET: "${DEV_LOGIN_SERVICE_SECRET}"
