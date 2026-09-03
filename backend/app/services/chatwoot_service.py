@@ -273,7 +273,7 @@ def create_webhook(callback_url: str) -> dict:
     url = urljoin(_base(), f"api/v1/accounts/{settings.CHATWOOT_ACCOUNT_ID}/webhooks")
     payload = {
         "url": callback_url,
-        "name": "CUP System v1.0.30",
+        "name": f"CUP System v{settings.APP_VERSION}",
         "subscriptions": ["message_created", "conversation_status_changed", "conversation_updated"],
     }
     with _client() as client:
