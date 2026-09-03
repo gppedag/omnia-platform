@@ -4836,6 +4836,8 @@ setInterval(load,5000);
           : [];
 
 
+      let documentsChanged=false;
+
       files.forEach(file=>{
 
         const key=
@@ -4852,6 +4854,8 @@ setInterval(load,5000);
           key,
           file
         );
+
+        documentsChanged=true;
 
 
         addEvent(
@@ -4873,7 +4877,8 @@ setInterval(load,5000);
       });
 
 
-      renderPatientContext();
+      if(documentsChanged)
+        renderPatientContext();
 
     }catch(e){
 
@@ -4934,15 +4939,6 @@ setInterval(load,5000);
   window.setInterval(
     syncDocuments,
     2500
-  );
-
-
-  window.setInterval(
-    ()=>{
-      renderOperationalTimeline();
-      renderPatientContext();
-    },
-    2000
   );
 
 
@@ -6380,12 +6376,6 @@ setInterval(load,5000);
       e
     );
   }
-
-
-  window.setInterval(
-    refresh,
-    2000
-  );
 
 
   window.setTimeout(
