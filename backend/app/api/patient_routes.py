@@ -1191,151 +1191,23 @@ def patient_overview(
     """
     Vista operatore aggregata del paziente:
     anagrafica, prenotazioni, conversazioni e documenti.
+
+    Logica delegata a app.services.patient_context_service
+    (consolidata con l'endpoint /api/omnichannel/patients/{id}/operator-context
+    nella Fase 1 di unificazione Patient Context, fix/patient-context-unify).
     """
 
-    from app.models.booking import Booking
-    from app.models.chat import ChatSession
-    from app.models.portal import PatientDocument
+    from app.services.patient_context_service import get_operator_full_overview
 
-    patient = (
-        db.query(Patient)
-        .options(joinedload(Patient.user))
-        .filter(Patient.id == patient_id)
-        .first()
-    )
+    overview = get_operator_full_overview(db, patient_id)
 
-    if not patient:
+    if overview is None:
         raise HTTPException(
             status_code=404,
             detail="Paziente non trovato"
         )
 
-    bookings = (
-        db.query(Booking)
-        .filter(Booking.patient_id == patient_id)
-        .order_by(Booking.scheduled_at.desc())
-        .limit(50)
-        .all()
-    )
-
-    sessions = (
-        db.query(ChatSession)
-        .filter(ChatSession.patient_id == patient_id)
-        .order_by(
-            ChatSession.updated_at.desc(),
-            ChatSession.created_at.desc(),
-        )
-        .limit(20)
-        .all()
-    )
-
-    documents = (
-        db.query(PatientDocument)
-        .filter(
-            PatientDocument.patient_id == patient_id
-        )
-        .order_by(
-            PatientDocument.created_at.desc()
-        )
-        .limit(50)
-        .all()
-    )
-
-    conversations = []
-
-    for session in sessions:
-
-        messages = list(
-            session.messages or []
-        )[-30:]
-
-        conversations.append({
-            "id": session.id,
-            "channel": session.channel,
-            "status": session.status,
-            "sender_id": session.sender_id,
-            "created_at": session.created_at,
-            "updated_at": session.updated_at,
-            "messages": [
-                {
-                    "id": message.id,
-                    "role": message.role,
-                    "content": message.content,
-                    "created_at": message.created_at,
-                }
-                for message in messages
-            ],
-        })
-
-    return {
-
-        "patient": {
-            "id": patient.id,
-            "full_name":
-                patient.user.full_name
-                if patient.user else None,
-            "phone":
-                patient.user.phone
-                if patient.user else None,
-            "email":
-                patient.user.email
-                if patient.user else None,
-            "fiscal_code":
-                patient.fiscal_code,
-            "date_of_birth":
-                patient.date_of_birth,
-            "notes":
-                patient.notes,
-        },
-
-        "bookings": [
-            {
-                "id": booking.id,
-                "service_name":
-                    booking.service_name,
-                "scheduled_at":
-                    booking.scheduled_at,
-                "end_at":
-                    booking.end_at,
-                "status":
-                    booking.status,
-                "priority":
-                    booking.priority,
-                "notes":
-                    booking.notes,
-                "care_regime":
-                    booking.care_regime,
-                "source":
-                    booking.source,
-            }
-            for booking in bookings
-        ],
-
-        "conversations":
-            conversations,
-
-        "documents": [
-            {
-                "id":
-                    document.id,
-                "booking_id":
-                    document.booking_id,
-                "category":
-                    document.category,
-                "title":
-                    document.title,
-                "filename":
-                    document.filename,
-                "mime_type":
-                    document.mime_type,
-                "status":
-                    document.status,
-                "created_at":
-                    document.created_at,
-            }
-            for document in documents
-        ],
-    }
+    return overview
 
 
 # /OMNIA_PATIENT_360_V1

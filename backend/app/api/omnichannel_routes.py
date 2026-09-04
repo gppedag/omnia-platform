@@ -1463,131 +1463,16 @@ def omnia_operator_patient_context(
         )
     ),
 ):
-    from sqlalchemy import inspect as sa_inspect
-    from sqlalchemy import text as sa_text
+    """
+    Contesto leggero paziente per pannelli "durante l'interazione"
+    (Omnia Console). Logica delegata a app.services.patient_context_service
+    (consolidata con l'endpoint /api/patients/{id}/overview nella Fase 1
+    di unificazione Patient Context, fix/patient-context-unify).
+    """
 
-    inspector = sa_inspect(db.bind)
-    tables = set(inspector.get_table_names())
+    from app.services.patient_context_service import get_operator_light_context
 
-    result = {
-        "ok": True,
-        "patient_id": patient_id,
-        "bookings": [],
-        "documents": [],
-        "pending_count": 0,
-    }
-
-    # --------------------------------------------------------
-    # PRENOTAZIONI
-    # --------------------------------------------------------
-
-    if "bookings" in tables:
-        try:
-            rows = (
-                db.execute(
-                    sa_text("""
-                        SELECT *
-                        FROM bookings
-                        WHERE patient_id = :patient_id
-                        ORDER BY scheduled_at DESC
-                        LIMIT 8
-                    """),
-                    {"patient_id": patient_id},
-                )
-                .mappings()
-                .all()
-            )
-
-            for row in rows:
-                data = dict(row)
-
-                status = str(
-                    data.get("status")
-                    or ""
-                ).lower()
-
-                if status in {
-                    "pending",
-                    "waiting",
-                    "requested",
-                    "hold",
-                    "held",
-                }:
-                    result["pending_count"] += 1
-
-                result["bookings"].append({
-                    "id": data.get("id"),
-                    "service_name": (
-                        data.get("service_name")
-                        or data.get("service")
-                        or data.get("visit_name")
-                        or "Prestazione"
-                    ),
-                    "scheduled_at": data.get("scheduled_at"),
-                    "status": data.get("status"),
-                    "regime": (
-                        data.get("care_regime")
-                        or data.get("regime")
-                    ),
-                    "price_cents": (
-                        data.get("quoted_price_cents")
-                        or data.get("price_cents")
-                    ),
-                    "agenda_id": data.get("agenda_id"),
-                })
-
-        except Exception:
-            logger.exception(
-                "Omnia V11: lettura bookings fallita "
-                "patient_id=%s",
-                patient_id,
-            )
-
-    # --------------------------------------------------------
-    # DOCUMENTI PAZIENTE
-    # --------------------------------------------------------
-
-    if "patient_documents" in tables:
-        try:
-            rows = (
-                db.execute(
-                    sa_text("""
-                        SELECT *
-                        FROM patient_documents
-                        WHERE patient_id = :patient_id
-                        ORDER BY created_at DESC
-                        LIMIT 8
-                    """),
-                    {"patient_id": patient_id},
-                )
-                .mappings()
-                .all()
-            )
-
-            for row in rows:
-                data = dict(row)
-
-                result["documents"].append({
-                    "id": data.get("id"),
-                    "title": (
-                        data.get("title")
-                        or data.get("filename")
-                        or "Documento"
-                    ),
-                    "filename": data.get("filename"),
-                    "category": data.get("category"),
-                    "status": data.get("status"),
-                    "created_at": data.get("created_at"),
-                })
-
-        except Exception:
-            logger.exception(
-                "Omnia V11: lettura patient_documents "
-                "fallita patient_id=%s",
-                patient_id,
-            )
-
-    return result
+    return get_operator_light_context(db, patient_id)
 
 # /OMNIA_OPERATOR_PATIENT_CONTEXT_V11
 
