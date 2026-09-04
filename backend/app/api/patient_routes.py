@@ -1193,9 +1193,9 @@ def patient_overview(
     anagrafica, prenotazioni, conversazioni e documenti.
     """
 
-    from app.models.booking import Booking
     from app.models.chat import ChatSession
     from app.models.portal import PatientDocument
+    from app.services.patient_context_service import load_patient_context
 
     patient = (
         db.query(Patient)
@@ -1210,13 +1210,13 @@ def patient_overview(
             detail="Paziente non trovato"
         )
 
-    bookings = (
-        db.query(Booking)
-        .filter(Booking.patient_id == patient_id)
-        .order_by(Booking.scheduled_at.desc())
-        .limit(50)
-        .all()
+    ctx = load_patient_context(
+        db, patient_id,
+        bookings_limit=50,
+        documents_limit=50,
     )
+    bookings = ctx["bookings"]
+    documents = ctx["documents"]
 
     sessions = (
         db.query(ChatSession)
@@ -1226,18 +1226,6 @@ def patient_overview(
             ChatSession.created_at.desc(),
         )
         .limit(20)
-        .all()
-    )
-
-    documents = (
-        db.query(PatientDocument)
-        .filter(
-            PatientDocument.patient_id == patient_id
-        )
-        .order_by(
-            PatientDocument.created_at.desc()
-        )
-        .limit(50)
         .all()
     )
 
