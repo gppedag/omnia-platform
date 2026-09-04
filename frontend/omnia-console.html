@@ -834,6 +834,18 @@ button,input,select{font:inherit}
 
 <main class="shell">
 
+<div
+  id="omnia-standalone-phone-banner"
+  style="display:none;"
+  class="alert alert-warning mb-0 rounded-0 text-center py-2"
+>
+  <i class="bi bi-telephone-x"></i>
+  Modalità sola consultazione: i controlli chiamata (rispondi, riaggancia,
+  trasferisci) sono disattivati perché questa pagina non è collegata al
+  telefono operatore. Apri Omnia Console dall'applicazione principale per
+  gestire le chiamate.
+</div>
+
 <section class="col inbox">
   <div class="section-head">
     <h2 class="section-title">Inbox</h2>
@@ -2745,6 +2757,30 @@ try{
     if(shell)
       shell.style.height =
         "100vh";
+
+  } else {
+
+    /*
+     * Accesso standalone (fix/omnia-console-direct-url, Fase 3 Slice 1):
+     * senza window.parent.OmniaConsolePhone non c'e' alcun bridge verso
+     * window.OmniaPhone (client SIP), che vive solo nella shell legacy
+     * (app.js) e non va mai duplicato qui (nessuna seconda registrazione
+     * SIP, vedi commento OMNIA_CONSOLE_INTEGRATED_V4 in app.js).
+     * I singoli pulsanti telefono si disabilitano gia' da soli tramite
+     * omniaPhoneAvailable(); qui rendiamo il motivo visibile e persistente
+     * invece di affidarci al solo alert() per-click di omniaPhoneAction().
+     */
+    if(!omniaPhoneAvailable()){
+
+      const banner =
+        document.getElementById(
+          "omnia-standalone-phone-banner"
+        );
+
+      if(banner)
+        banner.style.display =
+          "block";
+    }
   }
 
 }catch(e){}
