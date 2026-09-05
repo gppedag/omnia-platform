@@ -730,6 +730,43 @@ async function bootstrapAuth() {
     loadHandoffQueue();
     loadWaitlist();
 
+    /*
+     * fix/omnia-console-open-conversation-deeplink (Fase 3, Slice 2a):
+     * apre direttamente una sessione chat quando si arriva da un
+     * deep-link (es. "Apri conversazione" in Omnia Console), invece di
+     * lasciare l'operatore sulla dashboard di default. openChatSession()
+     * e' la stessa funzione gia' usata dal resto della UI (riga ~2220).
+     */
+    try {
+
+      const deepLinkParams =
+        new URLSearchParams(location.search);
+
+      const openSessionId =
+        deepLinkParams.get("open_session");
+
+      if (openSessionId) {
+
+        document
+          .querySelector('[data-tab="chatbot"]')
+          ?.click();
+
+        await openChatSession(openSessionId);
+
+        history.replaceState(
+          null,
+          "",
+          location.pathname
+        );
+      }
+
+    } catch (err) {
+      console.error(
+        "[CUP] deep-link open_session",
+        err
+      );
+    }
+
   } catch (err) {
 
     console.error(

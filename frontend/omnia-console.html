@@ -2286,7 +2286,30 @@ window.doAction=function(action){
   }
 
   if(action==="conversation"){
-    location.href="/index.html";
+
+    /*
+     * fix/omnia-console-open-conversation-deeplink (Fase 3, Slice 2a):
+     * in precedenza si andava sempre a /index.html senza alcun
+     * riferimento alla sessione, quindi l'operatore atterrava sulla
+     * dashboard invece che sulla conversazione che stava guardando.
+     * Per gli item di tipo "chat", SELECTED.id e' gia' il ChatSession.id
+     * (vedi normaliseChat: id = s.id, dati da GET /api/chatbot/sessions).
+     * Per gli item "handoff" restiamo conservativi e non deep-linkiamo:
+     * un handoff puo' avere origine voce/telefono (source: "voice",
+     * "phone", "livekit") e non e' verificato che aprirlo come
+     * conversazione chat dia sempre un risultato sensato.
+     */
+    if(
+      SELECTED.type === "chat" &&
+      SELECTED.id
+    ){
+      location.href =
+        "/index.html?open_session=" +
+        encodeURIComponent(SELECTED.id);
+    } else {
+      location.href="/index.html";
+    }
+
     return;
   }
 };
