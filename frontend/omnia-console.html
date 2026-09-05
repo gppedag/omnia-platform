@@ -938,6 +938,17 @@ function arr(v){
   if(Array.isArray(v?.calls)) return v.calls;
   if(Array.isArray(v?.conversations)) return v.conversations;
   if(Array.isArray(v?.handoffs)) return v.handoffs;
+  /*
+   * fix/omnia-console-chat-history (Fase 3, Slice 2b):
+   * GET /api/chatbot/sessions/{id}/messages risponde con
+   * {"messages": [...], "attachments": [...]}. Questa chiave mancava,
+   * quindi arr(msgs) in enhanceSelected() ritornava sempre [] e lo
+   * storico completo della chat non veniva mai mostrato: il pannello
+   * restava sull'unico evento sintetico generato da normaliseChat().
+   * Aggiunta in coda, dopo tutte le chiavi esistenti: non altera nessuno
+   * degli altri 3 punti di utilizzo di arr() (calls/chats/handoffs).
+   */
+  if(Array.isArray(v?.messages)) return v.messages;
   return [];
 }
 
