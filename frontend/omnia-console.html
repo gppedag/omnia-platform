@@ -213,6 +213,23 @@ button,input,select{font:inherit}
   padding:18px 20px 110px;
 }
 
+.omnia-chat-reply{
+  display:flex;
+  gap:10px;
+  padding:0 20px 20px;
+  align-items:flex-end;
+}
+
+.omnia-chat-reply-text{
+  flex:1;
+  resize:vertical;
+  min-height:44px;
+  padding:8px 10px;
+  border:1px solid #d7dee8;
+  border-radius:8px;
+  font:inherit;
+}
+
 .empty{
   height:65vh;
   display:grid;
@@ -930,6 +947,40 @@ async function api(path){
   return await r.json();
 }
 
+/*
+ * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+ * scrittura verso il backend (owner/reply/close). A differenza di api()
+ * (sola lettura) qui estraiamo anche il campo "detail" dell'errore, perche'
+ * le regole di dominio (es. "conversazione non piu' LIVE", "non in carico
+ * all'operatore") arrivano come HTTP 409 con un messaggio leggibile che
+ * l'operatore deve vedere, non solo un codice di stato.
+ */
+async function postJson(path, body){
+  const r = await fetch(path, {
+    method: "POST",
+    headers: Object.assign(
+      {"Content-Type":"application/json"},
+      headers()
+    ),
+    body: JSON.stringify(body || {})
+  });
+
+  let data = null;
+  try{ data = await r.json(); }catch(e){}
+
+  if(!r.ok){
+    const detail =
+      data && data.detail
+        ? (typeof data.detail === "string"
+            ? data.detail
+            : JSON.stringify(data.detail))
+        : `${r.status} ${path}`;
+    throw new Error(detail);
+  }
+
+  return data;
+}
+
 function arr(v){
   if(Array.isArray(v)) return v;
   if(Array.isArray(v?.items)) return v.items;
@@ -1633,6 +1684,32 @@ async function renderSelected(){
         </div>
       `).join("")}
     </div>
+
+    ${
+      /*
+       * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+       * composer di risposta, visibile solo per conversazioni chat gia'
+       * in carico all'operatore (stessa condizione di renderActions).
+       * Stesso endpoint/contratto di app.js: POST
+       * /api/chatbot/sessions/{id}/reply { text }.
+       */
+      (item.type==="chat" && item.status==="handoff")
+        ? `
+          <div class="omnia-chat-reply" id="omniaChatReply">
+            <textarea
+              id="omniaChatReplyText"
+              class="omnia-chat-reply-text"
+              rows="2"
+              placeholder="Scrivi una risposta al paziente..."
+            ></textarea>
+            <button
+              class="action primary"
+              onclick="omniaChatSendReply('${esc(item.id)}')"
+            >Invia risposta</button>
+          </div>
+        `
+        : ""
+    }
   `;
 
   renderPatient(item);
@@ -1688,6 +1765,21 @@ function renderPatient(item){
 function renderActions(item){
   const bar=document.getElementById("actionBar");
   bar.style.display="flex";
+
+  /*
+   * ATTENZIONE (trovato durante fix/omnia-console-chat-actions, Slice 2c):
+   * questa funzione viene riassegnata piu' avanti nel file (prima a una
+   * versione intermedia, poi a "V7: niente duplicazione dei controlli
+   * telefonici nella barra inferiore", che e' quella REALMENTE eseguita
+   * a runtime e poi ulteriormente wrappata da V13). Il corpo qui sotto
+   * non viene mai eseguito una volta che lo script ha finito di caricare:
+   * e' shadowed. La logica delle azioni chat (Prendi in carico/Ritorna a
+   * AI/Chiudi conversazione) vive nella riassegnazione V7, non qui.
+   * Lasciato invariato rispetto all'originale per non introdurre ulteriore
+   * confusione tra le due copie; la deduplicazione delle riassegnazioni di
+   * renderActions/renderInbox/ecc. e' un intervento a parte, piu' ampio,
+   * gia' segnalato come debito tecnico nel report di validazione OMNIA.
+   */
 
   let actions=[];
 
@@ -2322,6 +2414,93 @@ window.doAction=function(action){
     }
 
     return;
+  }
+
+  /*
+   * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+   * le tre azioni di gestione conversazione, stessa logica/endpoint di
+   * app.js (btn-take-chat/btn-return-ai/btn-close-chat). Il refresh dopo
+   * ogni azione riusa load(), che gia' ricalcola SELECTED dal nuovo status
+   * e richiama renderSelected() se qualcosa e' cambiato (vedi load()).
+   */
+  if(action==="take-chat"){
+    omniaChatSetOwner(SELECTED.id,"operator");
+    return;
+  }
+
+  if(action==="return-ai"){
+    omniaChatSetOwner(SELECTED.id,"llm");
+    return;
+  }
+
+  if(action==="close-chat"){
+    omniaChatCloseSession(SELECTED.id);
+    return;
+  }
+};
+
+/*
+ * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+ * stessi endpoint gia' usati da app.js (CupApi.setConversationOwner /
+ * CupApi.closeChat / CupApi.replyChat), nessun nuovo endpoint backend.
+ * Errori mostrati con alert(), stesso pattern gia' in uso in questo file
+ * per omniaPhoneAction().
+ */
+async function omniaChatSetOwner(sessionId, owner){
+  try{
+    await postJson(
+      `${API}/omnichannel/sessions/${encodeURIComponent(sessionId)}/owner`,
+      {owner}
+    );
+    await load();
+  }catch(e){
+    alert(
+      "Impossibile aggiornare la conversazione: " + e.message
+    );
+  }
+}
+
+async function omniaChatCloseSession(sessionId){
+  try{
+    await postJson(
+      `${API}/chatbot/sessions/${encodeURIComponent(sessionId)}/close`,
+      {}
+    );
+    await load();
+  }catch(e){
+    alert(
+      "Impossibile chiudere la conversazione: " + e.message
+    );
+  }
+}
+
+window.omniaChatSendReply = async function(sessionId){
+  const box = document.getElementById("omniaChatReplyText");
+  const text = (box && box.value || "").trim();
+
+  if(!text) return;
+
+  const btn = document.querySelector(
+    '#omniaChatReply button'
+  );
+
+  if(btn) btn.disabled = true;
+
+  try{
+    await postJson(
+      `${API}/chatbot/sessions/${encodeURIComponent(sessionId)}/reply`,
+      {text}
+    );
+
+    if(box) box.value = "";
+
+    await load();
+  }catch(e){
+    alert(
+      "Impossibile inviare la risposta: " + e.message
+    );
+  }finally{
+    if(btn) btn.disabled = false;
   }
 };
 
@@ -3677,6 +3856,20 @@ renderActions =
 
     }else{
 
+      /*
+       * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+       * questa e' l'implementazione di renderActions REALMENTE attiva
+       * a runtime: renderActions viene riassegnata piu' volte nel file
+       * (qui alla V7, poi wrappata da V13 alla riga ~6600) e vince
+       * sempre l'ultima assegnazione con una function-expression completa
+       * come questa, che sovrascrive integralmente la funzione base
+       * dichiarata a inizio file (riga ~1765) senza richiamarla.
+       * La logica owner-based era stata aggiunta lì per errore: non
+       * aveva alcun effetto a runtime. Spostata qui.
+       */
+      const ownedByOperator =
+        item.status === "handoff";
+
       actions = [
         [
           "Apri conversazione",
@@ -3689,6 +3882,25 @@ renderActions =
           "booking"
         ]
       ];
+
+      if(ownedByOperator){
+        actions.push([
+          "Ritorna a AI",
+          "",
+          "return-ai"
+        ]);
+        actions.push([
+          "Chiudi conversazione",
+          "",
+          "close-chat"
+        ]);
+      }else{
+        actions.push([
+          "Prendi in carico",
+          "primary",
+          "take-chat"
+        ]);
+      }
     }
 
 
