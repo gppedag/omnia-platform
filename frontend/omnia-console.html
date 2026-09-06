@@ -1399,10 +1399,31 @@ function normaliseCall(c){
 function normaliseChat(s){
   const status=String(first(s.status,s.state,"")).toLowerCase();
 
+  /*
+   * fix/omnia-console-channel-badge (Fase 5):
+   * il campo s.channel e' gia' restituito da GET /api/chatbot/sessions
+   * (vedi chatbot_routes.py::operator_sessions) ma non veniva mai letto
+   * qui. Nessuna modifica backend: il dato c'era gia', semplicemente non
+   * era esposto in UI. Le conversazioni WhatsApp/Telegram/Web erano gia'
+   * tutte operabili (rispondi/prendi in carico/chiudi instradano gia'
+   * correttamente per canale via send_outbound()), ma indistinguibili
+   * tra loro nell'interfaccia: apparivano tutte genericamente come "Chat".
+   */
+  const channel=String(first(s.channel,"web")).toLowerCase();
+  const channelLabel=
+    channel==="whatsapp" ? "WhatsApp" :
+    channel==="telegram" ? "Telegram" :
+    channel==="web" ? "Web Chat" :
+    channel==="sms" ? "SMS" :
+    channel==="phone" ? "Telefono" :
+    channel;
+
   return {
     key:`chat:${s.id}`,
     type:"chat",
     source:"chat",
+    channel,
+    channelLabel,
     raw:s,
     id:s.id,
     status,
@@ -1431,7 +1452,7 @@ function normaliseChat(s){
     patientId:first(s.patient_id,s.patient?.id),
     patient:s.patient || null,
     started:first(s.updated_at,s.created_at),
-    subtitle:`Chat · ${status || "sessione"}`,
+    subtitle:`${channelLabel} · ${status || "sessione"}`,
     events:[
       {
         title:"Conversazione",
@@ -1598,7 +1619,8 @@ function renderInbox(){
       <div class="item-sub">
         <span class="badge ${x.live?"live":x.attention?"wait":""}">
           ${x.type==="voice"?"Voce":
-            x.type==="handoff"?"Handoff":"Chat"}
+            x.type==="handoff"?"Handoff":
+            x.channelLabel || "Chat"}
         </span>
         <span>${esc(x.status || "")}</span>
       </div>
