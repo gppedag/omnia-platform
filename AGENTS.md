@@ -102,16 +102,46 @@ Prima di commit, quando applicabili:
 - Docker:
   validare la configurazione Compose prima di avviare o ricreare servizi
 
-## Handoff
-A fine attività fornire:
-- branch
-- commit
-- file modificati
-- test eseguiti
-- come testare in DEV
-- rischi
-- release/deploy instructions
-- rollback
+## Handoff Document
+
+Per ogni feature/fix significativa:
+- creare docs/handoffs/<branch-name>.md (sostituire "/" con "-")
+- includere:
+  Objective
+  Branch
+  Base Version
+  Target Version
+  Analysis
+  Implementation
+  Files Changed
+  Architectural Decisions
+  Tests
+  DEV Test Procedure
+  Risks
+  Open Issues
+  Release / Deploy
+  Rollback
+  Production Alignment
+- il file deve descrivere solo ciò che è realmente stato implementato
+- niente secret/runtime data
+- aggiornarlo prima del commit finale
+
+### Handoff Metadata
+AGENTS VERSION
+- Base Version
+- Target Version
+- Version references updated
+- Old version references intentionally retained
+
+HANDOFF DOCUMENT
+- path
+- status
+
+PRODUCTION ALIGNMENT
+- Required YES/NO
+- Current PROD version/commit if known
+- Candidate version/commit
+- ask user whether to proceed
 
 ## Production Release Authorization
 
@@ -143,6 +173,87 @@ Documentare sempre:
 - servizi toccati
 - test eseguiti
 - procedure di rollback
+
+## Task Handoff Document
+
+Per ogni feature/fix significativa:
+- creare docs/handoffs/<branch-name>.md (sostituire "/" con "-")
+- includere:
+  Objective
+  Branch
+  Base Version
+  Target Version
+  Analysis
+  Implementation
+  Files Changed
+  Architectural Decisions
+  Tests
+  DEV Test Procedure
+  Risks
+  Open Issues
+  Release / Deploy
+  Rollback
+  Production Alignment
+- il file deve descrivere solo ciò che è realmente stato implementato
+- niente secret/runtime data
+- aggiornarlo prima del commit finale
+
+## Application Versioning
+Formato MAJOR.MINOR.PATCH.
+
+Per ogni feature/fix o modifica funzionale significativa:
+- incrementare automaticamente PATCH di 1
+- esempio 1.1.1 -> 1.1.2
+- un solo bump per feature/branch, non per commit
+- non fare ulteriori bump per correzioni nello stesso branch
+- una nuova attività deve leggere la versione corrente da develop
+
+NON incrementare automaticamente la versione per:
+- AGENTS.md
+- sola documentazione
+- commenti
+- attività read-only
+- modifiche esclusivamente infrastrutturali DEV
+salvo richiesta esplicita.
+
+## Version Source of Truth
+Prima del bump cercare e mantenere coerenti, quando applicabili:
+- backend/app/config.py
+- frontend/config.js
+- docker-compose.yml
+- frontend/index.html
+- frontend/chatbot.html
+- .env.example
+- altri riferimenti runtime/current trovati
+
+Non modificare:
+- .env runtime
+- .env.dev solo per il bump
+- RELEASE_*.md storici
+- changelog storici
+
+Distinguere:
+application version
+environment label
+
+## Version Workflow
+Per ogni nuova feature/fix:
+- verificare develop aggiornato
+- leggere Base Version
+- calcolare Target Version = PATCH + 1
+- indicarle nel piano e nel handoff
+- creare branch
+- implementare
+- aggiornare riferimenti versione
+- aggiornare docs/handoffs/<branch>.md
+- cercare vecchie versioni residue
+- classificare residui come:
+  runtime/current
+  presentation/current
+  historical/documentation
+- test DEV
+- merge develop
+- chiedere se allineare PROD
 
 ## OpenCode / ChatGPT Collaboration
 - GitHub è source of truth

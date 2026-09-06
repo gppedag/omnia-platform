@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    APP_VERSION: str = "1.1.1"
+    APP_VERSION: str = "1.1.2"
     DEMO_DATA_ENABLED: bool = True
     DEMO_AUTO_SEED: bool = True
     DEMO_LOGIN_USERS_ENABLED: bool = True
