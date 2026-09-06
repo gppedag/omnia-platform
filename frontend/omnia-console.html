@@ -213,6 +213,23 @@ button,input,select{font:inherit}
   padding:18px 20px 110px;
 }
 
+.omnia-chat-reply{
+  display:flex;
+  gap:10px;
+  padding:0 20px 20px;
+  align-items:flex-end;
+}
+
+.omnia-chat-reply-text{
+  flex:1;
+  resize:vertical;
+  min-height:44px;
+  padding:8px 10px;
+  border:1px solid #d7dee8;
+  border-radius:8px;
+  font:inherit;
+}
+
 .empty{
   height:65vh;
   display:grid;
@@ -834,6 +851,18 @@ button,input,select{font:inherit}
 
 <main class="shell">
 
+<div
+  id="omnia-standalone-phone-banner"
+  style="display:none;"
+  class="alert alert-warning mb-0 rounded-0 text-center py-2"
+>
+  <i class="bi bi-telephone-x"></i>
+  Modalità sola consultazione: i controlli chiamata (rispondi, riaggancia,
+  trasferisci) sono disattivati perché questa pagina non è collegata al
+  telefono operatore. Apri Omnia Console dall'applicazione principale per
+  gestire le chiamate.
+</div>
+
 <section class="col inbox">
   <div class="section-head">
     <h2 class="section-title">Inbox</h2>
@@ -918,6 +947,40 @@ async function api(path){
   return await r.json();
 }
 
+/*
+ * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+ * scrittura verso il backend (owner/reply/close). A differenza di api()
+ * (sola lettura) qui estraiamo anche il campo "detail" dell'errore, perche'
+ * le regole di dominio (es. "conversazione non piu' LIVE", "non in carico
+ * all'operatore") arrivano come HTTP 409 con un messaggio leggibile che
+ * l'operatore deve vedere, non solo un codice di stato.
+ */
+async function postJson(path, body){
+  const r = await fetch(path, {
+    method: "POST",
+    headers: Object.assign(
+      {"Content-Type":"application/json"},
+      headers()
+    ),
+    body: JSON.stringify(body || {})
+  });
+
+  let data = null;
+  try{ data = await r.json(); }catch(e){}
+
+  if(!r.ok){
+    const detail =
+      data && data.detail
+        ? (typeof data.detail === "string"
+            ? data.detail
+            : JSON.stringify(data.detail))
+        : `${r.status} ${path}`;
+    throw new Error(detail);
+  }
+
+  return data;
+}
+
 function arr(v){
   if(Array.isArray(v)) return v;
   if(Array.isArray(v?.items)) return v.items;
@@ -926,6 +989,17 @@ function arr(v){
   if(Array.isArray(v?.calls)) return v.calls;
   if(Array.isArray(v?.conversations)) return v.conversations;
   if(Array.isArray(v?.handoffs)) return v.handoffs;
+  /*
+   * fix/omnia-console-chat-history (Fase 3, Slice 2b):
+   * GET /api/chatbot/sessions/{id}/messages risponde con
+   * {"messages": [...], "attachments": [...]}. Questa chiave mancava,
+   * quindi arr(msgs) in enhanceSelected() ritornava sempre [] e lo
+   * storico completo della chat non veniva mai mostrato: il pannello
+   * restava sull'unico evento sintetico generato da normaliseChat().
+   * Aggiunta in coda, dopo tutte le chiavi esistenti: non altera nessuno
+   * degli altri 3 punti di utilizzo di arr() (calls/chats/handoffs).
+   */
+  if(Array.isArray(v?.messages)) return v.messages;
   return [];
 }
 
@@ -1325,10 +1399,31 @@ function normaliseCall(c){
 function normaliseChat(s){
   const status=String(first(s.status,s.state,"")).toLowerCase();
 
+  /*
+   * fix/omnia-console-channel-badge (Fase 5):
+   * il campo s.channel e' gia' restituito da GET /api/chatbot/sessions
+   * (vedi chatbot_routes.py::operator_sessions) ma non veniva mai letto
+   * qui. Nessuna modifica backend: il dato c'era gia', semplicemente non
+   * era esposto in UI. Le conversazioni WhatsApp/Telegram/Web erano gia'
+   * tutte operabili (rispondi/prendi in carico/chiudi instradano gia'
+   * correttamente per canale via send_outbound()), ma indistinguibili
+   * tra loro nell'interfaccia: apparivano tutte genericamente come "Chat".
+   */
+  const channel=String(first(s.channel,"web")).toLowerCase();
+  const channelLabel=
+    channel==="whatsapp" ? "WhatsApp" :
+    channel==="telegram" ? "Telegram" :
+    channel==="web" ? "Web Chat" :
+    channel==="sms" ? "SMS" :
+    channel==="phone" ? "Telefono" :
+    channel;
+
   return {
     key:`chat:${s.id}`,
     type:"chat",
     source:"chat",
+    channel,
+    channelLabel,
     raw:s,
     id:s.id,
     status,
@@ -1357,7 +1452,7 @@ function normaliseChat(s){
     patientId:first(s.patient_id,s.patient?.id),
     patient:s.patient || null,
     started:first(s.updated_at,s.created_at),
-    subtitle:`Chat · ${status || "sessione"}`,
+    subtitle:`${channelLabel} · ${status || "sessione"}`,
     events:[
       {
         title:"Conversazione",
@@ -1524,7 +1619,8 @@ function renderInbox(){
       <div class="item-sub">
         <span class="badge ${x.live?"live":x.attention?"wait":""}">
           ${x.type==="voice"?"Voce":
-            x.type==="handoff"?"Handoff":"Chat"}
+            x.type==="handoff"?"Handoff":
+            x.channelLabel || "Chat"}
         </span>
         <span>${esc(x.status || "")}</span>
       </div>
@@ -1610,6 +1706,32 @@ async function renderSelected(){
         </div>
       `).join("")}
     </div>
+
+    ${
+      /*
+       * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+       * composer di risposta, visibile solo per conversazioni chat gia'
+       * in carico all'operatore (stessa condizione di renderActions).
+       * Stesso endpoint/contratto di app.js: POST
+       * /api/chatbot/sessions/{id}/reply { text }.
+       */
+      (item.type==="chat" && item.status==="handoff")
+        ? `
+          <div class="omnia-chat-reply" id="omniaChatReply">
+            <textarea
+              id="omniaChatReplyText"
+              class="omnia-chat-reply-text"
+              rows="2"
+              placeholder="Scrivi una risposta al paziente..."
+            ></textarea>
+            <button
+              class="action primary"
+              onclick="omniaChatSendReply('${esc(item.id)}')"
+            >Invia risposta</button>
+          </div>
+        `
+        : ""
+    }
   `;
 
   renderPatient(item);
@@ -1665,6 +1787,21 @@ function renderPatient(item){
 function renderActions(item){
   const bar=document.getElementById("actionBar");
   bar.style.display="flex";
+
+  /*
+   * ATTENZIONE (trovato durante fix/omnia-console-chat-actions, Slice 2c):
+   * questa funzione viene riassegnata piu' avanti nel file (prima a una
+   * versione intermedia, poi a "V7: niente duplicazione dei controlli
+   * telefonici nella barra inferiore", che e' quella REALMENTE eseguita
+   * a runtime e poi ulteriormente wrappata da V13). Il corpo qui sotto
+   * non viene mai eseguito una volta che lo script ha finito di caricare:
+   * e' shadowed. La logica delle azioni chat (Prendi in carico/Ritorna a
+   * AI/Chiudi conversazione) vive nella riassegnazione V7, non qui.
+   * Lasciato invariato rispetto all'originale per non introdurre ulteriore
+   * confusione tra le due copie; la deduplicazione delle riassegnazioni di
+   * renderActions/renderInbox/ecc. e' un intervento a parte, piu' ampio,
+   * gia' segnalato come debito tecnico nel report di validazione OMNIA.
+   */
 
   let actions=[];
 
@@ -2274,8 +2411,118 @@ window.doAction=function(action){
   }
 
   if(action==="conversation"){
-    location.href="/index.html";
+
+    /*
+     * fix/omnia-console-open-conversation-deeplink (Fase 3, Slice 2a):
+     * in precedenza si andava sempre a /index.html senza alcun
+     * riferimento alla sessione, quindi l'operatore atterrava sulla
+     * dashboard invece che sulla conversazione che stava guardando.
+     * Per gli item di tipo "chat", SELECTED.id e' gia' il ChatSession.id
+     * (vedi normaliseChat: id = s.id, dati da GET /api/chatbot/sessions).
+     * Per gli item "handoff" restiamo conservativi e non deep-linkiamo:
+     * un handoff puo' avere origine voce/telefono (source: "voice",
+     * "phone", "livekit") e non e' verificato che aprirlo come
+     * conversazione chat dia sempre un risultato sensato.
+     */
+    if(
+      SELECTED.type === "chat" &&
+      SELECTED.id
+    ){
+      location.href =
+        "/index.html?open_session=" +
+        encodeURIComponent(SELECTED.id);
+    } else {
+      location.href="/index.html";
+    }
+
     return;
+  }
+
+  /*
+   * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+   * le tre azioni di gestione conversazione, stessa logica/endpoint di
+   * app.js (btn-take-chat/btn-return-ai/btn-close-chat). Il refresh dopo
+   * ogni azione riusa load(), che gia' ricalcola SELECTED dal nuovo status
+   * e richiama renderSelected() se qualcosa e' cambiato (vedi load()).
+   */
+  if(action==="take-chat"){
+    omniaChatSetOwner(SELECTED.id,"operator");
+    return;
+  }
+
+  if(action==="return-ai"){
+    omniaChatSetOwner(SELECTED.id,"llm");
+    return;
+  }
+
+  if(action==="close-chat"){
+    omniaChatCloseSession(SELECTED.id);
+    return;
+  }
+};
+
+/*
+ * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+ * stessi endpoint gia' usati da app.js (CupApi.setConversationOwner /
+ * CupApi.closeChat / CupApi.replyChat), nessun nuovo endpoint backend.
+ * Errori mostrati con alert(), stesso pattern gia' in uso in questo file
+ * per omniaPhoneAction().
+ */
+async function omniaChatSetOwner(sessionId, owner){
+  try{
+    await postJson(
+      `${API}/omnichannel/sessions/${encodeURIComponent(sessionId)}/owner`,
+      {owner}
+    );
+    await load();
+  }catch(e){
+    alert(
+      "Impossibile aggiornare la conversazione: " + e.message
+    );
+  }
+}
+
+async function omniaChatCloseSession(sessionId){
+  try{
+    await postJson(
+      `${API}/chatbot/sessions/${encodeURIComponent(sessionId)}/close`,
+      {}
+    );
+    await load();
+  }catch(e){
+    alert(
+      "Impossibile chiudere la conversazione: " + e.message
+    );
+  }
+}
+
+window.omniaChatSendReply = async function(sessionId){
+  const box = document.getElementById("omniaChatReplyText");
+  const text = (box && box.value || "").trim();
+
+  if(!text) return;
+
+  const btn = document.querySelector(
+    '#omniaChatReply button'
+  );
+
+  if(btn) btn.disabled = true;
+
+  try{
+    await postJson(
+      `${API}/chatbot/sessions/${encodeURIComponent(sessionId)}/reply`,
+      {text}
+    );
+
+    if(box) box.value = "";
+
+    await load();
+  }catch(e){
+    alert(
+      "Impossibile inviare la risposta: " + e.message
+    );
+  }finally{
+    if(btn) btn.disabled = false;
   }
 };
 
@@ -2745,6 +2992,30 @@ try{
     if(shell)
       shell.style.height =
         "100vh";
+
+  } else {
+
+    /*
+     * Accesso standalone (fix/omnia-console-direct-url, Fase 3 Slice 1):
+     * senza window.parent.OmniaConsolePhone non c'e' alcun bridge verso
+     * window.OmniaPhone (client SIP), che vive solo nella shell legacy
+     * (app.js) e non va mai duplicato qui (nessuna seconda registrazione
+     * SIP, vedi commento OMNIA_CONSOLE_INTEGRATED_V4 in app.js).
+     * I singoli pulsanti telefono si disabilitano gia' da soli tramite
+     * omniaPhoneAvailable(); qui rendiamo il motivo visibile e persistente
+     * invece di affidarci al solo alert() per-click di omniaPhoneAction().
+     */
+    if(!omniaPhoneAvailable()){
+
+      const banner =
+        document.getElementById(
+          "omnia-standalone-phone-banner"
+        );
+
+      if(banner)
+        banner.style.display =
+          "block";
+    }
   }
 
 }catch(e){}
@@ -3607,6 +3878,20 @@ renderActions =
 
     }else{
 
+      /*
+       * fix/omnia-console-chat-actions (Fase 3, Slice 2c):
+       * questa e' l'implementazione di renderActions REALMENTE attiva
+       * a runtime: renderActions viene riassegnata piu' volte nel file
+       * (qui alla V7, poi wrappata da V13 alla riga ~6600) e vince
+       * sempre l'ultima assegnazione con una function-expression completa
+       * come questa, che sovrascrive integralmente la funzione base
+       * dichiarata a inizio file (riga ~1765) senza richiamarla.
+       * La logica owner-based era stata aggiunta lì per errore: non
+       * aveva alcun effetto a runtime. Spostata qui.
+       */
+      const ownedByOperator =
+        item.status === "handoff";
+
       actions = [
         [
           "Apri conversazione",
@@ -3619,6 +3904,25 @@ renderActions =
           "booking"
         ]
       ];
+
+      if(ownedByOperator){
+        actions.push([
+          "Ritorna a AI",
+          "",
+          "return-ai"
+        ]);
+        actions.push([
+          "Chiudi conversazione",
+          "",
+          "close-chat"
+        ]);
+      }else{
+        actions.push([
+          "Prendi in carico",
+          "primary",
+          "take-chat"
+        ]);
+      }
     }
 
 
